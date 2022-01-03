@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "facing=down": { "model": "amethystgravity:block/pylon" },
+        "facing=up": { "model": "amethystgravity:block/pylon", "x":180 },
+        "facing=south": { "model": "amethystgravity:block/pylon", "x":90},
+        "facing=west": { "model": "amethystgravity:block/pylon", "x":90, "y": 90 },
+        "facing=north": { "model": "amethystgravity:block/pylon", "x":90, "y": 180 },
+        "facing=east": { "model": "amethystgravity:block/pylon", "x":90, "y": 270 }
+    }
+}
