@@ -2,6 +2,7 @@ package cyborgcabbage.amethystgravity.block.entity;
 
 import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.access.GravityData;
+import cyborgcabbage.amethystgravity.block.PlatingBlock;
 import me.andrew.gravitychanger.api.GravityChangerAPI;
 import me.andrew.gravitychanger.util.RotationUtil;
 import net.minecraft.block.BlockState;
@@ -14,9 +15,18 @@ import java.util.List;
 
 public class PlatingBlockEntity extends BlockEntity{
     public PlatingBlockEntity(BlockPos pos, BlockState state) {
-        super(AmethystGravity.PYLON_BLOCK_ENTITY, pos, state);
+        super(AmethystGravity.PLATING_BLOCK_ENTITY, pos, state);
     }
     public static void serverTick(World world, BlockPos pos, BlockState state, PlatingBlockEntity be) {
+        if(state.get(PlatingBlock.DOWN)) attractForDirection(world,pos,state,be,Direction.DOWN);
+        if(state.get(PlatingBlock.UP)) attractForDirection(world,pos,state,be,Direction.UP);
+        if(state.get(PlatingBlock.NORTH)) attractForDirection(world,pos,state,be,Direction.NORTH);
+        if(state.get(PlatingBlock.SOUTH)) attractForDirection(world,pos,state,be,Direction.SOUTH);
+        if(state.get(PlatingBlock.EAST)) attractForDirection(world,pos,state,be,Direction.EAST);
+        if(state.get(PlatingBlock.WEST)) attractForDirection(world,pos,state,be,Direction.WEST);
+
+    }
+    private static void attractForDirection(World world, BlockPos pos, BlockState state, PlatingBlockEntity be, Direction plateDirection){
         double minX = pos.getX();
         double minY = pos.getY();
         double minZ = pos.getZ();
@@ -25,7 +35,7 @@ public class PlatingBlockEntity extends BlockEntity{
         double maxZ = pos.getZ()+1;
         int r = 0;
         int rm = 0;
-        Direction dir = Direction.EAST;//state.get(PylonBlock.FACING);
+        Direction dir = plateDirection;
         /*if (dir != Direction.WEST) minX -= r; else minX -= rm;
         if (dir != Direction.EAST) maxX += r; else maxX += rm;
 

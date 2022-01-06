@@ -20,15 +20,15 @@ public class AmethystGravity implements ModInitializer {
 	public static final String MODID = "amethystgravity";
 	public static final Logger LOGGER = LogManager.getLogger(MODID);
 
-	public static final Block PYLON_BLOCK = new PlatingBlock(FabricBlockSettings.of(Material.AMETHYST).nonOpaque().noCollision().breakInstantly());
+	public static final Block PLATING_BLOCK = new PlatingBlock(FabricBlockSettings.of(Material.AMETHYST).nonOpaque().noCollision().breakInstantly());
 
-	public static BlockEntityType<PlatingBlockEntity> PYLON_BLOCK_ENTITY;
+	public static BlockEntityType<PlatingBlockEntity> PLATING_BLOCK_ENTITY;
 
 	@Override
 	public void onInitialize() {
-		Registry.register(Registry.BLOCK, new Identifier(MODID, "pylon"), PYLON_BLOCK);
-		Registry.register(Registry.ITEM, new Identifier(MODID, "pylon"), new BlockItem(PYLON_BLOCK, new FabricItemSettings().group(ItemGroup.MISC)));
+		Registry.register(Registry.BLOCK, new Identifier(MODID, "plating"), PLATING_BLOCK);
+		Registry.register(Registry.ITEM, new Identifier(MODID, "plating"), new BlockItem(PLATING_BLOCK, new FabricItemSettings().group(ItemGroup.MISC)));
 
-		PYLON_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "amethystgravity:pylon_block_entity", FabricBlockEntityTypeBuilder.create(PlatingBlockEntity::new, PYLON_BLOCK).build(null));
+		PLATING_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "amethystgravity:plating_block_entity", FabricBlockEntityTypeBuilder.create(PlatingBlockEntity::new, PLATING_BLOCK).build(null));
 	}
 }

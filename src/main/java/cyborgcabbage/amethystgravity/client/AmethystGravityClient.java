@@ -8,6 +8,6 @@ import net.minecraft.client.render.RenderLayer;
 public class AmethystGravityClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), AmethystGravity.PYLON_BLOCK);
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), AmethystGravity.PLATING_BLOCK);
     }
 }

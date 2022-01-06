@@ -33,7 +33,7 @@ public class PlayerEntityMixin implements GravityData {
         if(!directions.isEmpty() && !player.isSpectator() && !player.getAbilities().flying) newDir = directions.get(0);
         Direction oldDir = GravityChangerAPI.getGravityDirection(player);
         //Set gravity
-        if(!oldDir.equals(newDir)) {
+        if(!oldDir.equals(newDir) && !directions.contains(oldDir)) {
             GravityChangerAPI.setGravityDirection(player, newDir);
         }
         //Clear direction pool

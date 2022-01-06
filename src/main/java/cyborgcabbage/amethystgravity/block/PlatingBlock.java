@@ -5,16 +5,20 @@ import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.block.entity.PlatingBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -114,7 +118,7 @@ public class PlatingBlock extends BlockWithEntity {
     }
 
 
-    @Override
+    /*@Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return switch (ctx.getSide().getOpposite()) {
             case DOWN -> getDefaultState().with(DOWN, true);
@@ -124,7 +128,7 @@ public class PlatingBlock extends BlockWithEntity {
             case WEST -> getDefaultState().with(WEST, true);
             case EAST -> getDefaultState().with(EAST, true);
         };
-    }
+    }*/
 
     @Nullable
     @Override
@@ -158,6 +162,39 @@ public class PlatingBlock extends BlockWithEntity {
     */
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return world.isClient ? null : checkType(type, AmethystGravity.PYLON_BLOCK_ENTITY, PlatingBlockEntity::serverTick);
+        return world.isClient ? null : checkType(type, AmethystGravity.PLATING_BLOCK_ENTITY, PlatingBlockEntity::serverTick);
+    }
+
+    @Override
+    public boolean canReplace(BlockState state, ItemPlacementContext context) {
+        if (!context.shouldCancelInteraction() && context.getStack().getItem() == this.asItem()) {
+            return !state.get(directionToProperty(context.getSide().getOpposite()));
+        }
+        return super.canReplace(state, context);
+    }
+
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos());
+        if (blockState.isOf(this)) {
+            return blockState.with(directionToProperty(ctx.getSide().getOpposite()),true);
+        }
+        return getDefaultState().with(directionToProperty(ctx.getSide().getOpposite()), true);
+    }
+
+    /*@Override
+    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+        return Block.sideCoversSmallSquare(world, pos.down(), Direction.UP);
+    }*/
+
+    private BooleanProperty directionToProperty(Direction direction){
+        return switch (direction) {
+            case DOWN -> DOWN;
+            case UP -> UP;
+            case NORTH -> NORTH;
+            case SOUTH -> SOUTH;
+            case WEST -> WEST;
+            case EAST -> EAST;
+        };
     }
 }
