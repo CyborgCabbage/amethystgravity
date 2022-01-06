@@ -1,10 +1,66 @@
 {
-    "variants": {
-        "facing=down": { "model": "amethystgravity:block/pylon" },
-        "facing=up": { "model": "amethystgravity:block/pylon", "x":180 },
-        "facing=south": { "model": "amethystgravity:block/pylon", "x":90},
-        "facing=west": { "model": "amethystgravity:block/pylon", "x":90, "y": 90 },
-        "facing=north": { "model": "amethystgravity:block/pylon", "x":90, "y": 180 },
-        "facing=east": { "model": "amethystgravity:block/pylon", "x":90, "y": 270 }
-    }
+    "multipart": [
+        {
+          "when": {
+            "down": "true"
+          },
+          "apply": {
+            "model": "amethystgravity:block/plating",
+            "uvlock": true
+          }
+        },
+        {
+          "when": {
+            "up": "true"
+          },
+          "apply": {
+            "model": "amethystgravity:block/plating",
+            "x": 180,
+            "uvlock": true
+          }
+        },
+        {
+          "when": {
+            "south": "true"
+          },
+          "apply": {
+            "model": "amethystgravity:block/plating",
+            "x": 90,
+            "uvlock": true
+          }
+        },
+        {
+          "when": {
+            "west": "true"
+          },
+          "apply": {
+            "model": "amethystgravity:block/plating",
+            "x": 90,
+            "y": 90,
+            "uvlock": true
+          }
+        },
+        {
+          "when": {
+            "north": "true"
+          },
+          "apply": {
+            "model": "amethystgravity:block/plating",
+            "x": 90,
+            "y": 180,
+            "uvlock": true
+          }
+        },
+        {
+          "when": {
+            "east": "true"
+          },
+          "apply": {
+            "model": "amethystgravity:block/plating",
+            "x": 90,
+            "y": 270,
+            "uvlock": true
+          }
+        }
+    ]
 }

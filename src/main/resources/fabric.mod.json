@@ -20,6 +20,9 @@
   "entrypoints": {
     "main": [
       "cyborgcabbage.amethystgravity.AmethystGravity"
+    ],
+    "client": [
+      "cyborgcabbage.amethystgravity.client.AmethystGravityClient"
     ]
   },
   "mixins": [

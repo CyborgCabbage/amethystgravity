@@ -3,10 +3,10 @@ package cyborgcabbage.amethystgravity.mixin;
 import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.access.GravityData;
 import me.andrew.gravitychanger.api.GravityChangerAPI;
+import me.andrew.gravitychanger.util.RotationUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -29,13 +29,12 @@ public class PlayerEntityMixin implements GravityData {
         PlayerEntity player = (PlayerEntity)(Object)this;
         //Get direction
         List<Direction> directions = ((GravityData)this).getGravityData();
-        Direction dir = Direction.DOWN;
-        if(!directions.isEmpty() && !player.isSpectator() && !player.getAbilities().flying) dir = directions.get(0);
+        Direction newDir = Direction.DOWN;
+        if(!directions.isEmpty() && !player.isSpectator() && !player.getAbilities().flying) newDir = directions.get(0);
+        Direction oldDir = GravityChangerAPI.getGravityDirection(player);
         //Set gravity
-        if(!GravityChangerAPI.getGravityDirection(player).equals(dir)) {
-            GravityChangerAPI.setGravityDirection(player, dir);
-            AmethystGravity.LOGGER.info(player);
-            AmethystGravity.LOGGER.info(dir);
+        if(!oldDir.equals(newDir)) {
+            GravityChangerAPI.setGravityDirection(player, newDir);
         }
         //Clear direction pool
         directions.clear();
