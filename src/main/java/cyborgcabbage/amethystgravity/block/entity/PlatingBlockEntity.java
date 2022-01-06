@@ -58,7 +58,9 @@ public class PlatingBlockEntity extends BlockEntity{
             //Get the centre of rotation
             Vec3d stablePoint = RotationUtil.vecPlayerToWorld(0.0, 0.3, 0.0, GravityChangerAPI.getAppliedGravityDirection(entity));
             stablePoint = stablePoint.add(entity.getPos());
-            if (box.contains(stablePoint)) {
+            Vec3d dim = new Vec3d(0.3,0.3,0.3);
+            Box smallBox = new Box(stablePoint.subtract(dim),stablePoint.add(dim));
+            if (box.intersects(smallBox)) {
                 List<Direction> gravityData = ((GravityData) entity).getGravityData();
                 gravityData.add(dir);
             }

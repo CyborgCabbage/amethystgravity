@@ -187,7 +187,7 @@ public class PlatingBlock extends BlockWithEntity {
         return Block.sideCoversSmallSquare(world, pos.down(), Direction.UP);
     }*/
 
-    private BooleanProperty directionToProperty(Direction direction){
+    public static BooleanProperty directionToProperty(Direction direction){
         return switch (direction) {
             case DOWN -> DOWN;
             case UP -> UP;
