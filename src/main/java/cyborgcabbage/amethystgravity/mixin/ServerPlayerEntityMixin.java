@@ -78,10 +78,10 @@ public class ServerPlayerEntityMixin implements GravityData {
                         float rotAngle = (float)Math.acos(newVec.dot(oldVec));
                         Quaternion q = new Quaternion(rotAxis, rotAngle, false);
                         //Rotate player velocity
-                        /*Vec3f worldVelocity = new Vec3f(RotationUtil.vecPlayerToWorld(player.getVelocity(),GravityChangerAPI.getGravityDirection(player)));
+                        Vec3f worldVelocity = new Vec3f(RotationUtil.vecPlayerToWorld(player.getVelocity(),GravityChangerAPI.getGravityDirection(player)));
                         worldVelocity.rotate(q);
                         player.setVelocity(new Vec3d(RotationUtil.vecWorldToPlayer(worldVelocity, GravityChangerAPI.getGravityDirection(player))));
-                        player.velocityModified = true;*/
+                        player.velocityModified = true;
                         //Get angles to vector
                         Vec2f realAngles = RotationUtil.rotPlayerToWorld(player.getYaw(), player.getPitch(), GravityChangerAPI.getGravityDirection(player));
                         Vec3f lookVector = new Vec3f(rotToVec(realAngles.x,realAngles.y));
