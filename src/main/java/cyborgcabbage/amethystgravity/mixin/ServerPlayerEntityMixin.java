@@ -59,47 +59,45 @@ public class ServerPlayerEntityMixin implements GravityData {
         //Set gravity
         if((!oldDir.equals(newDir) && !directions.contains(oldDir)) || (!onPlate && wasOnPlate)) {
             if(!onPlate){
+                //Get the blockstate below the player relative to their gravity
                 Vec3d pos = player.getPos();
                 Vec3f gVec = oldDir.getUnitVector();
                 double scale = 0.1;
                 pos = pos.add(gVec.getX()*scale,gVec.getY()*scale, gVec.getZ()*scale);
                 BlockPos blockPos = new BlockPos(pos.x,pos.y,pos.z);
                 BlockState blockState = player.getWorld().getBlockState(blockPos);
+                //If the block is a gravity plate
                 if(blockState.getBlock() instanceof PlatingBlock platingBlock){
                     Direction snapDirection = getSnapDirection(blockState,oldDir);
                     if(snapDirection != null){
-
-                        GravityChangerAPI.setGravityDirection(player, snapDirection);
-                        player.setPosition(player.getPos().add(gVec.getX()*0.1,gVec.getY()*0.1,gVec.getZ()*0.1));
+                        //Get gravity rotation quaternion
                         Vec3f oldVec = oldDir.getUnitVector();
                         Vec3f newVec = snapDirection.getUnitVector();
-                        //Get quaternion for gravity rotation
                         Vec3f rotAxis = oldVec.copy();
                         rotAxis.cross(newVec);
-                        float rotAngle = (float)Math.acos(oldVec.dot(newVec));
+                        float rotAngle = (float)Math.acos(newVec.dot(oldVec));
                         Quaternion q = new Quaternion(rotAxis, rotAngle, false);
-                        /*//Apply rotation to player velocity
-                        Vec3d temp = player.getVelocity();
-                        Vec3f vel = new Vec3f(temp);
-                        vel.rotate(q);
-                        player.setVelocity(new Vec3d(vel));*/
-                        Vec3f temp0 = new Vec3f(RotationUtil.vecPlayerToWorld(player.getVelocity(), oldDir));
-                        temp0.rotate(q);
-                        //player.setVelocity(RotationUtil.vecWorldToPlayer(new Vec3d(temp0), snapDirection));
-                        //player.velocityModified = true;
-                        Direction relativeDirection = RotationUtil.dirWorldToPlayer(snapDirection, oldDir);
-                        AmethystGravity.LOGGER.info(relativeDirection);
-                        //player.setVelocity(RotationUtil.vecWorldToPlayer(player.getVelocity(),relativeDirection.getOpposite()));
-                        player.setVelocity(rotateVelocity(player.getVelocity(),relativeDirection));
-                        player.velocityModified = true;
+                        //Rotate player velocity
+                        /*Vec3f worldVelocity = new Vec3f(RotationUtil.vecPlayerToWorld(player.getVelocity(),GravityChangerAPI.getGravityDirection(player)));
+                        worldVelocity.rotate(q);
+                        player.setVelocity(new Vec3d(RotationUtil.vecWorldToPlayer(worldVelocity, GravityChangerAPI.getGravityDirection(player))));
+                        player.velocityModified = true;*/
+                        //Get angles to vector
+                        Vec2f realAngles = RotationUtil.rotPlayerToWorld(player.getYaw(), player.getPitch(), GravityChangerAPI.getGravityDirection(player));
+                        Vec3f lookVector = new Vec3f(rotToVec(realAngles.x,realAngles.y));
+                        //Rotate Vector
+                        lookVector.rotate(q);
+                        //Get vector as angles
+                        realAngles = vecToRot(lookVector.getX(),lookVector.getY(),lookVector.getZ());
+                        realAngles = RotationUtil.rotWorldToPlayer(realAngles, GravityChangerAPI.getGravityDirection(player));
                         //Rotate client player view
                         EnumSet<PlayerPositionLookS2CPacket.Flag> flags = EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class);
                         flags.add(PlayerPositionLookS2CPacket.Flag.X);
                         flags.add(PlayerPositionLookS2CPacket.Flag.Y);
                         flags.add(PlayerPositionLookS2CPacket.Flag.Z);
-                        flags.add(PlayerPositionLookS2CPacket.Flag.X_ROT);
-                        flags.add(PlayerPositionLookS2CPacket.Flag.Y_ROT);
-                        player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(0.0,0.0,0.0,0.0f,90.0f,flags,0,false));
+                        player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(0.0,0.0,0.0,realAngles.x,realAngles.y,flags,0,false));
+                        //Change Gravity
+                        GravityChangerAPI.setGravityDirection(player, snapDirection);
                     }else{
                         GravityChangerAPI.setGravityDirection(player, newDir);
                     }
@@ -186,5 +184,27 @@ public class ServerPlayerEntityMixin implements GravityData {
         return true;
     }
 
+    private static Vec3d rotToVec(float yaw, float pitch) {
+        double radPitch = (double)pitch * 0.017453292D;
+        double radNegYaw = (double)(-yaw) * 0.017453292D;
+        double cosNegYaw = Math.cos(radNegYaw);
+        double sinNegYaw = Math.sin(radNegYaw);
+        double cosPitch = Math.cos(radPitch);
+        double sinPitch = Math.sin(radPitch);
+        return new Vec3d(sinNegYaw * cosPitch, -sinPitch, cosNegYaw * cosPitch);
+    }
 
+    private static Vec2f vecToRot(double x, double y, double z) {
+        double sinPitch = -y;
+        double radPitch = Math.asin(sinPitch);
+        double cosPitch = Math.cos(radPitch);
+        double sinNegYaw = x / cosPitch;
+        double cosNegYaw = MathHelper.clamp(z / cosPitch, -1.0D, 1.0D);
+        double radNegYaw = Math.acos(cosNegYaw);
+        if (sinNegYaw < 0.0D) {
+            radNegYaw = 6.283185307179586D - radNegYaw;
+        }
+
+        return new Vec2f(MathHelper.wrapDegrees((float)(-radNegYaw) / 0.017453292F), (float)radPitch / 0.017453292F);
+    }
 }
