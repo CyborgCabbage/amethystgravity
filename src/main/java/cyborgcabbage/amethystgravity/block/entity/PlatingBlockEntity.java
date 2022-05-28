@@ -44,6 +44,7 @@ public class PlatingBlockEntity extends BlockEntity{
 
         if (dir != Direction.NORTH) minZ -= r; else minZ -= rm;
         if (dir != Direction.SOUTH) maxZ += r; else maxZ += rm;*/
+        //Extend area of effect a bit so the player can jump without falling off
         switch(dir){
             case DOWN -> maxY+=0.6;
             case UP -> minY-=0.6;
@@ -58,8 +59,10 @@ public class PlatingBlockEntity extends BlockEntity{
             //Get the centre of rotation
             Vec3d stablePoint = RotationUtil.vecPlayerToWorld(0.0, 0.3, 0.0, GravityChangerAPI.getAppliedGravityDirection(entity));
             stablePoint = stablePoint.add(entity.getPos());
+            //Create 0.6 x 0.6 x 0.6 box around centre of rotation
             Vec3d dim = new Vec3d(0.3,0.3,0.3);
             Box smallBox = new Box(stablePoint.subtract(dim),stablePoint.add(dim));
+            //Check if the players rotation box is colliding with this gravity plates area of effect
             if (box.intersects(smallBox)) {
                 List<Direction> gravityData = ((GravityData) entity).getGravityData();
                 gravityData.add(dir);

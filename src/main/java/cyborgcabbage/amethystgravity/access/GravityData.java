@@ -7,6 +7,4 @@ import java.util.List;
 
 public interface GravityData {
     List<Direction> getGravityData();
-    boolean isOnPlate();
-    void setOnPlate(boolean b);
 }
