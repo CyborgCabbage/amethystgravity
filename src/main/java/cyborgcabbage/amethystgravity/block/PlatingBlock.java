@@ -3,24 +3,30 @@ package cyborgcabbage.amethystgravity.block;
 import com.google.common.collect.ImmutableMap;
 import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.block.entity.PlatingBlockEntity;
+import cyborgcabbage.amethystgravity.gravity.GravityEffect;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.*;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.*;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -41,6 +47,9 @@ public class PlatingBlock extends BlockWithEntity {
     protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(15.0, 0.0, 0.0, 16.0, 16.0, 16.0);
     protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
     private final Map<BlockState, VoxelShape> shapesByState;
+
+    public static final double LARGE_GRAVITY_EFFECT_HEIGHT = 1.3;
+    public static final double SMALL_GRAVITY_EFFECT_HEIGHT = 0.25;
 
     public PlatingBlock(Settings settings) {
         super(settings);
@@ -88,6 +97,19 @@ public class PlatingBlock extends BlockWithEntity {
         stateManager.add(UP,DOWN,NORTH,SOUTH,EAST,WEST);
     }
 
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+        if (state.get(directionToProperty(direction)) && !canPlaceOn(world, pos.offset(direction), direction.getOpposite())) {
+            state = state.with(directionToProperty(direction), false);
+            if(getDirections(state).size() == 0){
+                return Blocks.AIR.getDefaultState();
+            }else{
+                return state;
+            }
+        } else {
+            return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        }
+    }
+
     @Override
     public BlockState rotate(BlockState state, BlockRotation rotation) {
         switch (rotation) {
@@ -117,19 +139,6 @@ public class PlatingBlock extends BlockWithEntity {
         return super.mirror(state, mirror);
     }
 
-
-    /*@Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return switch (ctx.getSide().getOpposite()) {
-            case DOWN -> getDefaultState().with(DOWN, true);
-            case UP -> getDefaultState().with(UP, true);
-            case NORTH -> getDefaultState().with(NORTH, true);
-            case SOUTH -> getDefaultState().with(SOUTH, true);
-            case WEST -> getDefaultState().with(WEST, true);
-            case EAST -> getDefaultState().with(EAST, true);
-        };
-    }*/
-
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
@@ -141,25 +150,7 @@ public class PlatingBlock extends BlockWithEntity {
         // With inheriting from BlockWithEntity this defaults to INVISIBLE, so we need to change that!
         return BlockRenderType.MODEL;
     }
-    /*
-    @Override
-    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
-        return 1.0f;
-    }
 
-    @Override
-    public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
-        return true;
-    }
-
-    @Override
-    public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
-        if (stateFrom.isOf(this)) {
-            return true;
-        }
-        return super.isSideInvisible(state, stateFrom, direction);
-    }
-    */
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
         return world.isClient ? null : checkType(type, AmethystGravity.PLATING_BLOCK_ENTITY, PlatingBlockEntity::serverTick);
@@ -182,10 +173,26 @@ public class PlatingBlock extends BlockWithEntity {
         return getDefaultState().with(directionToProperty(ctx.getSide().getOpposite()), true);
     }
 
-    /*@Override
+    private boolean canPlaceOn(BlockView world, BlockPos pos, Direction side) {
+        BlockState blockState = world.getBlockState(pos);
+        return blockState.isSideSolidFullSquare(world, pos, side);
+    }
+
+    @Override
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-        return Block.sideCoversSmallSquare(world, pos.down(), Direction.UP);
-    }*/
+        ArrayList<Direction> directions = getDirections(state);
+        if(directions.size() == 1){
+            return canPlaceOn(world, pos.offset(directions.get(0)), directions.get(0).getOpposite());
+        }
+        //Placing inside an existing plating
+        if(directions.size() > 1){
+            for(Direction dir : getDirections(world.getBlockState(pos))){
+                directions.remove(dir);
+            }
+            return canPlaceOn(world, pos.offset(directions.get(0)), directions.get(0).getOpposite());
+        }
+        return false;
+    }
 
     public static BooleanProperty directionToProperty(Direction direction){
         return switch (direction) {
@@ -196,5 +203,65 @@ public class PlatingBlock extends BlockWithEntity {
             case WEST -> WEST;
             case EAST -> EAST;
         };
+    }
+
+    public static ArrayList<Direction> getDirections(BlockState blockState){
+        ArrayList<Direction> list = new ArrayList<>();
+        //Iterate directions
+        for(int directionId = 0; directionId < 6; directionId++){
+            //Convert ID to Direction
+            Direction direction = Direction.byId(directionId);
+            //If the plate has this direction
+            if(blockState.get(PlatingBlock.directionToProperty(direction))){
+                list.add(direction);
+            }
+        }
+        return list;
+    }
+
+    public static GravityEffect getLargeGravityEffect(Direction direction, BlockPos blockPos){
+        return new GravityEffect(direction, GravityEffect.Type.PLATE, LARGE_GRAVITY_EFFECT_HEIGHT*1*1, blockPos);
+    }
+
+    public static GravityEffect getSmallGravityEffect(Direction direction, BlockPos blockPos){
+        return new GravityEffect(direction, GravityEffect.Type.PLATE, SMALL_GRAVITY_EFFECT_HEIGHT*1*1, blockPos);
+    }
+
+    public static Vec3d getPlatePosition(Direction direction, BlockPos blockPos) {
+        Vec3d blockCentre = new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        blockCentre = blockCentre.add(0.5, 0.5, 0.5);
+
+        Vec3d plateOffset = new Vec3d(direction.getUnitVector());
+        plateOffset = plateOffset.multiply(0.5);
+
+        return blockCentre.add(plateOffset);
+    }
+
+    private static Box getGravityEffectBox(BlockPos blockPos, Direction direction, double height){
+        double minX = blockPos.getX();
+        double minY = blockPos.getY();
+        double minZ = blockPos.getZ();
+        double maxX = blockPos.getX()+1;
+        double maxY = blockPos.getY()+1;
+        double maxZ = blockPos.getZ()+1;
+        //Extend area of effect a bit so the player can jump without falling off
+        double delta = height-1.0;
+        switch(direction){
+            case DOWN -> maxY+=delta;
+            case UP -> minY-=delta;
+            case NORTH -> maxZ+=delta;
+            case SOUTH -> minZ-=delta;
+            case WEST -> maxX+=delta;
+            case EAST -> minX-=delta;
+        }
+        return new Box(minX, minY, minZ, maxX, maxY, maxZ);
+    }
+
+    public static Box getLargeGravityEffectBox(BlockPos blockPos, Direction direction){
+        return getGravityEffectBox(blockPos, direction, LARGE_GRAVITY_EFFECT_HEIGHT);
+    }
+
+    public static Box getSmallGravityEffectBox(BlockPos blockPos, Direction direction){
+        return getGravityEffectBox(blockPos, direction, SMALL_GRAVITY_EFFECT_HEIGHT);
     }
 }

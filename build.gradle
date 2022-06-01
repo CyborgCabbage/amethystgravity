@@ -12,12 +12,19 @@ group = project.maven_group
 
 repositories {
 	maven {
+		url "https://maven.shedaniel.me/"
+	}
+	maven {
+		url "https://maven.terraformersmc.com/"
+	}
+	/*maven {
 		name = "Modrinth"
 		url = "https://api.modrinth.com/maven"
 		content {
 			includeGroup "maven.modrinth"
 		}
-	}
+	}*/
+	mavenLocal()
 }
 
 dependencies {
@@ -28,7 +35,8 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	modImplementation "maven.modrinth:gravitychanger:${project.gravitychanger_version}"
+	modImplementation "gravitychanger:GravityChanger:${project.gravitychanger_version}"
+	//modImplementation "maven.modrinth:gravitychanger:${project.gravitychanger_version}"
 }
 
 processResources {
