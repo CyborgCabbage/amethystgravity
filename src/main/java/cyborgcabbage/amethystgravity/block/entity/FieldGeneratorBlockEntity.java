@@ -1,8 +1,8 @@
 package cyborgcabbage.amethystgravity.block.entity;
 
 import cyborgcabbage.amethystgravity.AmethystGravity;
-import cyborgcabbage.amethystgravity.access.GravityData;
 import cyborgcabbage.amethystgravity.block.FieldGeneratorBlock;
+import cyborgcabbage.amethystgravity.gravity.GravityData;
 import cyborgcabbage.amethystgravity.gravity.GravityEffect;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;

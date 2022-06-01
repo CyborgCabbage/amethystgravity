@@ -1,7 +1,7 @@
 package cyborgcabbage.amethystgravity.mixin;
 
-import cyborgcabbage.amethystgravity.access.GravityData;
 import cyborgcabbage.amethystgravity.block.PlatingBlock;
+import cyborgcabbage.amethystgravity.gravity.GravityData;
 import cyborgcabbage.amethystgravity.gravity.GravityEffect;
 import me.andrew.gravitychanger.api.GravityChangerAPI;
 import net.minecraft.block.BlockState;

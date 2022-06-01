@@ -1,6 +1,4 @@
-package cyborgcabbage.amethystgravity.access;
-
-import cyborgcabbage.amethystgravity.gravity.GravityEffect;
+package cyborgcabbage.amethystgravity.gravity;
 
 import java.util.ArrayList;
 
