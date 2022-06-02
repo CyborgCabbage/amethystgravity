@@ -4,9 +4,9 @@
   "package": "cyborgcabbage.amethystgravity.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "ServerPlayerEntityMixin"
   ],
   "client": [
+    "client.ClientPlayerEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

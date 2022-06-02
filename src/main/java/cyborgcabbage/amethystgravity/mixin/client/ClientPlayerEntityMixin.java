@@ -1,10 +1,11 @@
-package cyborgcabbage.amethystgravity.mixin;
+package cyborgcabbage.amethystgravity.mixin.client;
 
 import cyborgcabbage.amethystgravity.block.PlatingBlock;
 import cyborgcabbage.amethystgravity.gravity.GravityData;
 import cyborgcabbage.amethystgravity.gravity.GravityEffect;
 import me.andrew.gravitychanger.api.GravityChangerAPI;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -18,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Mixin(ServerPlayerEntity.class)
-public abstract class ServerPlayerEntityMixin implements GravityData {
+@Mixin(ClientPlayerEntity.class)
+public abstract class ClientPlayerEntityMixin implements GravityData {
     private static final int MINIMUM_TIME_BETWEEN_GRAVITY_CHANGES = 3; //(unit = ticks)
     public ArrayList<GravityEffect> gravityBlocks = new ArrayList<>();
     public ArrayList<GravityEffect> gravityBlocks2 = new ArrayList<>();
@@ -58,7 +59,7 @@ public abstract class ServerPlayerEntityMixin implements GravityData {
 
     @Inject(method="tick()V", at = @At("HEAD"))
     private void tickInject(CallbackInfo ci){
-        ServerPlayerEntity player = (ServerPlayerEntity)(Object)this;
+        ClientPlayerEntity player = (ClientPlayerEntity)(Object)this;
         setTimeSinceLastGravityChange(getTimeSinceLastGravityChange()+1);
         if(getTimeSinceLastGravityChange() > MINIMUM_TIME_BETWEEN_GRAVITY_CHANGES) {
             //Get the gravity direction we are
@@ -114,7 +115,7 @@ public abstract class ServerPlayerEntityMixin implements GravityData {
             if (currentGravity.direction() != newGravity.direction()) {
                 //TODO: if velocity is large, it shouldn't rotate
                 boolean rotatePerspective = arePerpendicular(currentGravity.direction(), newGravity.direction());
-                GravityChangerAPI.setGravityDirectionAdvanced(player, newGravity.direction(), rotatePerspective, rotatePerspective);
+                GravityChangerAPI.setGravityDirectionAdvancedClient(player, newGravity.direction(), rotatePerspective, rotatePerspective);
                 setTimeSinceLastGravityChange(0);
             }
             setCurrentGravityEffect(newGravity);
@@ -124,7 +125,7 @@ public abstract class ServerPlayerEntityMixin implements GravityData {
         getGravityData2().clear();
     }
 
-    private Optional<GravityEffect> getInsideCornerSnapDirection(ServerPlayerEntity player, GravityEffect currentGravity, List<GravityEffect> effects) {
+    private Optional<GravityEffect> getInsideCornerSnapDirection(ClientPlayerEntity player, GravityEffect currentGravity, List<GravityEffect> effects) {
         Optional<GravityEffect> effectMin = effects.stream()
                 .filter(e -> e.type() == GravityEffect.Type.PLATE)
                 .filter(e -> arePerpendicular(e.direction(), currentGravity.direction()))
@@ -139,12 +140,12 @@ public abstract class ServerPlayerEntityMixin implements GravityData {
             Vec3d pos = player.getPos();
             Vec3d delta = new Vec3d(currentGravity.direction().getUnitVector()).multiply(-(PlatingBlock.SMALL_GRAVITY_EFFECT_HEIGHT+0.05));
             pos = pos.add(delta);
-            player.requestTeleport(pos.x, pos.y, pos.z);
+            player.setPos(pos.x, pos.y, pos.z);
         });
         return effectMin;
     }
 
-    private Optional<GravityEffect> getOutsideCornerSnapDirection(ServerPlayerEntity player, GravityEffect currentGravity) {
+    private Optional<GravityEffect> getOutsideCornerSnapDirection(ClientPlayerEntity player, GravityEffect currentGravity) {
         //Get the blockstate below the player relative to their gravity
         Vec3d gVec = new Vec3d(currentGravity.direction().getUnitVector()).multiply(0.1);
         Vec3d pos = player.getPos().add(gVec);

@@ -7,6 +7,7 @@ import cyborgcabbage.amethystgravity.gravity.GravityData;
 import cyborgcabbage.amethystgravity.gravity.GravityEffect;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -37,7 +38,7 @@ public class FieldGeneratorBlockEntity extends BlockEntity implements NamedScree
     }
 
     public static void serverTick(World world, BlockPos blockPos, BlockState blockState, FieldGeneratorBlockEntity blockEntity) {
-        blockEntity.serverTick((ServerWorld)world, blockPos, blockState);
+        //blockEntity.serverTick((ServerWorld)world, blockPos, blockState);
     }
 
     public static void clientTick(World world, BlockPos blockPos, BlockState blockState, FieldGeneratorBlockEntity blockEntity) {
@@ -78,6 +79,36 @@ public class FieldGeneratorBlockEntity extends BlockEntity implements NamedScree
 
     private void clientTick(ClientWorld world, BlockPos blockPos, BlockState blockState){
         Direction direction = blockState.get(FieldGeneratorBlock.FACING).getOpposite();
+        //Applying gravity effect
+        //Large Box
+        {
+            Box box = getGravityEffectBox(blockPos, direction, FIELD_WIDTH, FIELD_HEIGHT_LARGE);
+            List<ClientPlayerEntity> playerEntities = world.getEntitiesByClass(ClientPlayerEntity.class, box, e -> true);
+            for (ClientPlayerEntity player : playerEntities) {
+                //Get player collider for gravity effects
+                Box gravityEffectCollider = GravityEffect.getGravityEffectCollider(player);
+                //Check if the player's rotation box is colliding with this gravity plates area of effect
+                if (box.intersects(gravityEffectCollider)) {
+                    List<GravityEffect> gravityData = ((GravityData) player).getGravityData();
+                    gravityData.add(getLargeGravityEffect(direction, blockPos));
+                }
+            }
+        }
+        //Small Box
+        {
+            Box box = getGravityEffectBox(blockPos, direction, FIELD_WIDTH, FIELD_HEIGHT_SMALL);
+            List<ClientPlayerEntity> playerEntities = world.getEntitiesByClass(ClientPlayerEntity.class, box, e -> true);
+            for (ClientPlayerEntity player : playerEntities) {
+                //Get player collider for gravity effects
+                Box gravityEffectCollider = GravityEffect.getGravityEffectCollider(player);
+                //Check if the player's rotation box is colliding with this gravity plates area of effect
+                if (box.intersects(gravityEffectCollider)) {
+                    List<GravityEffect> gravityData = ((GravityData) player).getGravityData2();
+                    gravityData.add(getLargeGravityEffect(direction, blockPos));
+                }
+            }
+        }
+        //Particles
         Vec3d pVel = new Vec3d(direction.getUnitVector()).multiply(0.01);
         Box box = getGravityEffectBox(blockPos, direction, FIELD_WIDTH, FIELD_HEIGHT_LARGE);
         Vec3d boxOrigin = new Vec3d(box.minX,box.minY,box.minZ);

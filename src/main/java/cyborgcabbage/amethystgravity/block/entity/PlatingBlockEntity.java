@@ -6,6 +6,7 @@ import cyborgcabbage.amethystgravity.gravity.GravityData;
 import cyborgcabbage.amethystgravity.gravity.GravityEffect;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -20,6 +21,12 @@ public class PlatingBlockEntity extends BlockEntity{
     }
 
     public static void serverTick(World world, BlockPos blockPos, BlockState blockState, PlatingBlockEntity blockEntity) {
+        /*for(Direction direction : PlatingBlock.getDirections(blockState)){
+            attractForDirection(world,blockPos,direction);
+        }*/
+    }
+
+    public static void clientTick(World world, BlockPos blockPos, BlockState blockState, PlatingBlockEntity blockEntity) {
         for(Direction direction : PlatingBlock.getDirections(blockState)){
             attractForDirection(world,blockPos,direction);
         }
@@ -29,8 +36,8 @@ public class PlatingBlockEntity extends BlockEntity{
         //Large Box
         {
             Box box = PlatingBlock.getLargeGravityEffectBox(blockPos, plateDirection);
-            List<PlayerEntity> playerEntities = world.getEntitiesByClass(PlayerEntity.class, box, e -> true);
-            for (PlayerEntity player : playerEntities) {
+            List<ClientPlayerEntity> playerEntities = world.getEntitiesByClass(ClientPlayerEntity.class, box, e -> true);
+            for (ClientPlayerEntity player : playerEntities) {
                 //Get player collider for gravity effects
                 Box gravityEffectCollider = GravityEffect.getGravityEffectCollider(player);
                 //Check if the player's rotation box is colliding with this gravity plates area of effect
@@ -43,8 +50,8 @@ public class PlatingBlockEntity extends BlockEntity{
         //Small Box
         {
             Box box = PlatingBlock.getSmallGravityEffectBox(blockPos, plateDirection);
-            List<PlayerEntity> playerEntities = world.getEntitiesByClass(PlayerEntity.class, box, e -> true);
-            for (PlayerEntity player : playerEntities) {
+            List<ClientPlayerEntity> playerEntities = world.getEntitiesByClass(ClientPlayerEntity.class, box, e -> true);
+            for (ClientPlayerEntity player : playerEntities) {
                 //Get player collider for gravity effects
                 Box gravityEffectCollider = GravityEffect.getGravityEffectCollider(player);
                 //Check if the player's rotation box is colliding with this gravity plates area of effect
