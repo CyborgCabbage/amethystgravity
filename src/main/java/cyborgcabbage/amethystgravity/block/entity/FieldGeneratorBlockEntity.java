@@ -2,7 +2,7 @@ package cyborgcabbage.amethystgravity.block.entity;
 
 import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.block.FieldGeneratorBlock;
-Aimport cyborgcabbage.amethystgravity.block.ui.FieldGeneratorScreenHandler;
+import cyborgcabbage.amethystgravity.block.ui.FieldGeneratorScreenHandler;
 import cyborgcabbage.amethystgravity.gravity.GravityData;
 import cyborgcabbage.amethystgravity.gravity.GravityEffect;
 import net.minecraft.block.BlockState;
