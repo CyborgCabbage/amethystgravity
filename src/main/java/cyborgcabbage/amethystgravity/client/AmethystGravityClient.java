@@ -1,9 +1,11 @@
 package cyborgcabbage.amethystgravity.client;
 
 import cyborgcabbage.amethystgravity.AmethystGravity;
+import cyborgcabbage.amethystgravity.block.ui.FieldGeneratorScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.particle.FlameParticle;
 import net.minecraft.client.render.RenderLayer;
@@ -27,5 +29,6 @@ public class AmethystGravityClient implements ClientModInitializer {
          * Second argument is the particle's factory. The factory controls how the particle behaves.
          * In this example, we'll use FlameParticle's Factory.*/
         ParticleFactoryRegistry.getInstance().register(AmethystGravity.GRAVITY_INDICATOR, FlameParticle.Factory::new);
+        ScreenRegistry.register(AmethystGravity.FIELD_GENERATOR_SCREEN_HANDLER, FieldGeneratorScreen::new);
     }
 }

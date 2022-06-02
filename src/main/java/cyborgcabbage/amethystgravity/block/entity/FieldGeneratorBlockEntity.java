@@ -2,24 +2,31 @@ package cyborgcabbage.amethystgravity.block.entity;
 
 import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.block.FieldGeneratorBlock;
+Aimport cyborgcabbage.amethystgravity.block.ui.FieldGeneratorScreenHandler;
 import cyborgcabbage.amethystgravity.gravity.GravityData;
 import cyborgcabbage.amethystgravity.gravity.GravityEffect;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Random;
 
-public class FieldGeneratorBlockEntity extends BlockEntity {
+public class FieldGeneratorBlockEntity extends BlockEntity implements NamedScreenHandlerFactory {
     private static final double FIELD_HEIGHT_LARGE = 1.3;
     private static final double FIELD_HEIGHT_SMALL = 0.25;
     private static final double FIELD_WIDTH = 5.0;
@@ -81,7 +88,7 @@ public class FieldGeneratorBlockEntity extends BlockEntity {
             Vec3d randomVec = new Vec3d(r.nextDouble(), r.nextDouble(), r.nextDouble());
             Vec3d pPos = boxOrigin.add(boxSize.multiply(randomVec));
             DefaultParticleType particleType = AmethystGravity.GRAVITY_INDICATOR;
-            world.addParticle(particleType,pPos.x,pPos.y,pPos.z,0,0,0);//pVel.x,pVel.y,pVel.z);
+            world.addParticle(particleType,pPos.x,pPos.y,pPos.z,pVel.x,pVel.y,pVel.z);
             amount--;
         }
     }
@@ -117,5 +124,17 @@ public class FieldGeneratorBlockEntity extends BlockEntity {
 
     private double getVolume(){
         return FIELD_HEIGHT_LARGE*FIELD_WIDTH*FIELD_WIDTH;
+    }
+
+
+    @Override
+    public Text getDisplayName() {
+        return new TranslatableText(getCachedState().getBlock().getTranslationKey());
+    }
+
+    @Nullable
+    @Override
+    public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+        return new FieldGeneratorScreenHandler(syncId, inv);
     }
 }
