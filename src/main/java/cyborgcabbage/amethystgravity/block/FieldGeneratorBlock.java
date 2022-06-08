@@ -72,7 +72,7 @@ public class FieldGeneratorBlock extends BlockWithEntity {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
         if (world.isClient)
             return checkType(type, AmethystGravity.FIELD_GENERATOR_BLOCK_ENTITY, FieldGeneratorBlockEntity::clientTick);
-        return checkType(type, AmethystGravity.FIELD_GENERATOR_BLOCK_ENTITY, FieldGeneratorBlockEntity::serverTick);
+        return null;
     }
 
     @Override

@@ -1,12 +1,12 @@
 package cyborgcabbage.amethystgravity.gravity;
 
+import net.minecraft.util.math.Direction;
+
 import java.util.ArrayList;
 
 public interface GravityData {
-    ArrayList<GravityEffect> getGravityData();
-    ArrayList<GravityEffect> getGravityData2();
-    void setCurrentGravityEffect(GravityEffect gravityEffect);
-    GravityEffect getCurrentGravityEffect();
-    int getTimeSinceLastGravityChange();
-    void setTimeSinceLastGravityChange(int time);
+    ArrayList<GravityEffect> getFieldList();
+    ArrayList<GravityEffect> getLowerFieldList();
+    void setFieldGravity(GravityEffect gravityEffect);
+    GravityEffect getFieldGravity();
 }

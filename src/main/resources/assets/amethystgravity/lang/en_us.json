@@ -1,0 +1,10 @@
+{
+  "itemGroup.amethystgravity.general": "Amethyst Gravity",
+  "block.amethystgravity.plating": "Gravity Plating",
+  "block.amethystgravity.field_generator": "Gravity Field Generator",
+  "amethystgravity.fieldGenerator.increase": "⏶",
+  "amethystgravity.fieldGenerator.decrease": "⏷",
+  "amethystgravity.fieldGenerator.height": "Height",
+  "amethystgravity.fieldGenerator.width": "Width",
+  "amethystgravity.fieldGenerator.depth": "Depth"
+}

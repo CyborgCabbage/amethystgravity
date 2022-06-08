@@ -30,7 +30,7 @@
   ],
 
   "depends": {
-    "gravitychanger": "^0.3.0",
+    "gravitychanger": "^0.4.0",
     "fabricloader": ">=0.11.3",
     "fabric": "*",
     "minecraft": "1.18.x",

@@ -39,7 +39,6 @@ public class PlatingBlock extends BlockWithEntity {
     public static final BooleanProperty UP = Properties.UP;
     public static final BooleanProperty DOWN = Properties.DOWN;
 
-
     protected static final VoxelShape DOWN_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
     protected static final VoxelShape UP_SHAPE = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
     protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
@@ -48,8 +47,7 @@ public class PlatingBlock extends BlockWithEntity {
     protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
     private final Map<BlockState, VoxelShape> shapesByState;
 
-    public static final double LARGE_GRAVITY_EFFECT_HEIGHT = 1.3;
-    public static final double SMALL_GRAVITY_EFFECT_HEIGHT = 0.25;
+    public static final double GRAVITY_EFFECT_HEIGHT = 0.9;
 
     public PlatingBlock(Settings settings) {
         super(settings);
@@ -153,7 +151,9 @@ public class PlatingBlock extends BlockWithEntity {
 
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, AmethystGravity.PLATING_BLOCK_ENTITY, world.isClient ? PlatingBlockEntity::clientTick : PlatingBlockEntity::serverTick);
+        if (world.isClient)
+            return checkType(type, AmethystGravity.PLATING_BLOCK_ENTITY, PlatingBlockEntity::clientTick);
+        return null;
     }
 
     @Override
@@ -219,25 +219,11 @@ public class PlatingBlock extends BlockWithEntity {
         return list;
     }
 
-    public static GravityEffect getLargeGravityEffect(Direction direction, BlockPos blockPos){
-        return new GravityEffect(direction, GravityEffect.Type.PLATE, LARGE_GRAVITY_EFFECT_HEIGHT*1*1, blockPos);
+    public static GravityEffect getGravityEffect(Direction direction, BlockPos blockPos){
+        return new GravityEffect(direction, GRAVITY_EFFECT_HEIGHT*1*1, blockPos);
     }
 
-    public static GravityEffect getSmallGravityEffect(Direction direction, BlockPos blockPos){
-        return new GravityEffect(direction, GravityEffect.Type.PLATE, SMALL_GRAVITY_EFFECT_HEIGHT*1*1, blockPos);
-    }
-
-    public static Vec3d getPlatePosition(Direction direction, BlockPos blockPos) {
-        Vec3d blockCentre = new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-        blockCentre = blockCentre.add(0.5, 0.5, 0.5);
-
-        Vec3d plateOffset = new Vec3d(direction.getUnitVector());
-        plateOffset = plateOffset.multiply(0.5);
-
-        return blockCentre.add(plateOffset);
-    }
-
-    private static Box getGravityEffectBox(BlockPos blockPos, Direction direction, double height){
+    public static Box getGravityEffectBox(BlockPos blockPos, Direction direction){
         double minX = blockPos.getX();
         double minY = blockPos.getY();
         double minZ = blockPos.getZ();
@@ -245,7 +231,7 @@ public class PlatingBlock extends BlockWithEntity {
         double maxY = blockPos.getY()+1;
         double maxZ = blockPos.getZ()+1;
         //Extend area of effect a bit so the player can jump without falling off
-        double delta = height-1.0;
+        double delta = GRAVITY_EFFECT_HEIGHT-1.0;
         switch(direction){
             case DOWN -> maxY+=delta;
             case UP -> minY-=delta;
@@ -255,13 +241,5 @@ public class PlatingBlock extends BlockWithEntity {
             case EAST -> minX-=delta;
         }
         return new Box(minX, minY, minZ, maxX, maxY, maxZ);
-    }
-
-    public static Box getLargeGravityEffectBox(BlockPos blockPos, Direction direction){
-        return getGravityEffectBox(blockPos, direction, LARGE_GRAVITY_EFFECT_HEIGHT);
-    }
-
-    public static Box getSmallGravityEffectBox(BlockPos blockPos, Direction direction){
-        return getGravityEffectBox(blockPos, direction, SMALL_GRAVITY_EFFECT_HEIGHT);
     }
 }

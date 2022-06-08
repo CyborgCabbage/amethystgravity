@@ -1,175 +1,169 @@
 package cyborgcabbage.amethystgravity.mixin.client;
 
-import cyborgcabbage.amethystgravity.block.PlatingBlock;
+import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.gravity.GravityData;
 import cyborgcabbage.amethystgravity.gravity.GravityEffect;
 import me.andrew.gravitychanger.api.GravityChangerAPI;
-import net.minecraft.block.BlockState;
+import me.andrew.gravitychanger.util.RotationUtil;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.MovementType;
+import net.minecraft.util.math.*;
+import net.minecraft.util.shape.VoxelShape;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 @Mixin(ClientPlayerEntity.class)
 public abstract class ClientPlayerEntityMixin implements GravityData {
-    private static final int MINIMUM_TIME_BETWEEN_GRAVITY_CHANGES = 3; //(unit = ticks)
-    public ArrayList<GravityEffect> gravityBlocks = new ArrayList<>();
-    public ArrayList<GravityEffect> gravityBlocks2 = new ArrayList<>();
+    public ArrayList<GravityEffect> gravityEffectList = new ArrayList<>();
+    public ArrayList<GravityEffect> lowerGravityEffectList = new ArrayList<>();
     public GravityEffect gravityEffect = null;
-    public int timeSinceLastGravityChange = 100; //(unit = ticks)
 
     @Override
-    public ArrayList<GravityEffect> getGravityData() {
-        return gravityBlocks;
+    public ArrayList<GravityEffect> getFieldList() {
+        return gravityEffectList;
     }
 
     @Override
-    public ArrayList<GravityEffect> getGravityData2() {
-        return gravityBlocks2;
+    public ArrayList<GravityEffect> getLowerFieldList() {
+        return lowerGravityEffectList;
     }
 
     @Override
-    public void setCurrentGravityEffect(GravityEffect _gravityEffect) {
+    public void setFieldGravity(GravityEffect _gravityEffect) {
         gravityEffect = _gravityEffect;
     }
 
     @Override
-    public GravityEffect getCurrentGravityEffect() {
+    public GravityEffect getFieldGravity() {
         return gravityEffect;
     }
 
-    @Override
-    public int getTimeSinceLastGravityChange() {
-        return timeSinceLastGravityChange;
-    }
-
-    @Override
-    public void setTimeSinceLastGravityChange(int time) {
-        timeSinceLastGravityChange = time;
-    }
-
-    @Inject(method="tick()V", at = @At("HEAD"))
-    private void tickInject(CallbackInfo ci){
-        ClientPlayerEntity player = (ClientPlayerEntity)(Object)this;
-        setTimeSinceLastGravityChange(getTimeSinceLastGravityChange()+1);
-        if(getTimeSinceLastGravityChange() > MINIMUM_TIME_BETWEEN_GRAVITY_CHANGES) {
-            //Get the gravity direction we are
-            GravityEffect currentGravity = getCurrentGravityEffect();
-            if (currentGravity == null) {
-                currentGravity = new GravityEffect(GravityChangerAPI.getGravityDirection(player), GravityEffect.Type.BASELINE, Double.MAX_VALUE, BlockPos.ORIGIN);
-                setCurrentGravityEffect(currentGravity);
-            }
-            //Get the gravity direction we should be
-            List<GravityEffect> directions = getGravityData();
-            List<GravityEffect> directions2 = getGravityData2();
-            //Add player default gravity
-            GravityEffect baseGravity = new GravityEffect(Direction.DOWN, GravityEffect.Type.BASELINE, Double.MAX_VALUE, BlockPos.ORIGIN);
-            directions.add(baseGravity);
-            directions2.add(baseGravity);
-
-            GravityEffect newGravity;
+    @ModifyArgs(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;move(Lnet/minecraft/entity/MovementType;Lnet/minecraft/util/math/Vec3d;)V"))
+    private void moveInject(Args args){
+        MovementType movementType = args.get(0);
+        Vec3d movement = args.get(1);
+        ClientPlayerEntity player = (ClientPlayerEntity) (Object) this;
+        if(movementType == MovementType.SELF && movement == player.getVelocity()) {
+            //Init vars
+            final GravityEffect currentGravity = getFieldGravity();
+            GravityEffect newGravity = null;
+            List<GravityEffect> directions = getFieldList();
             //If the player is flying or in spectator
-            if (player.isSpectator() || player.getAbilities().flying) {
-                //Reset player gravity to baseline (baseline will have the largest volume and therefore be last in the sorted list)
-                newGravity = baseGravity;
-            } else {
+            if (!player.isSpectator() && !player.getAbilities().flying) {
                 //Find the elements of directions which have the lowest volume
                 final double lowestVolume = directions.stream().map(GravityEffect::volume).min(Double::compare).orElse(0.0);
                 List<GravityEffect> highestPriority = directions.stream().filter(g -> g.volume() == lowestVolume).toList();
-                //Find the first element with equal direction to currentGravity
-                GravityEffect finalCurrentGravity = currentGravity;
-                Optional<GravityEffect> sameDirection = highestPriority.stream().filter(ge -> ge.direction() == finalCurrentGravity.direction()).findFirst();
-                //If an element was found, put it in newGravity
-                //Otherwise, newGravity = the first element of highestPriority
-                newGravity = sameDirection.orElse(highestPriority.get(0));
-
-                //Outside corner snap (if the player just left a plate)
-                if (currentGravity.type() == GravityEffect.Type.PLATE && newGravity.type() != GravityEffect.Type.PLATE) {
-                    newGravity = getOutsideCornerSnapDirection(player, currentGravity).orElse(newGravity);
+                if(highestPriority.size() > 0) {
+                    newGravity = highestPriority.get(0);
                 }
+                //Get colliding directions
+                List<Direction> localCollidingDirections = new ArrayList<>();
+                Box box = player.getBoundingBox();
+                List<VoxelShape> entityCollisions = player.world.getEntityCollisions(player, box.stretch(movement));
+                Vec3d adjustedMovement = (movement.lengthSquared() == 0.0) ? movement : Entity.adjustMovementForCollisions(player, movement, box, player.world, entityCollisions);
+                if (movement.x > adjustedMovement.x) localCollidingDirections.add(Direction.EAST);
+                if (movement.x < adjustedMovement.x) localCollidingDirections.add(Direction.WEST);
+                if (movement.y > adjustedMovement.y) localCollidingDirections.add(Direction.UP);
+                if (movement.y < adjustedMovement.y) localCollidingDirections.add(Direction.DOWN);
+                if (movement.z > adjustedMovement.z) localCollidingDirections.add(Direction.SOUTH);
+                if (movement.z < adjustedMovement.z) localCollidingDirections.add(Direction.NORTH);
+                if(currentGravity != null && highestPriority.size() > 0) {
+                    //Find an element with equal direction to currentGravity
+                    newGravity = highestPriority.stream().filter(ge -> ge.direction() == currentGravity.direction()).findFirst().orElse(newGravity);
+                }
+                if(currentGravity != null && localCollidingDirections.contains(Direction.DOWN)) {
+                    //Inside corner snap (if the player is on the ground)
+                    newGravity = getInsideCornerSnapDirection(currentGravity, highestPriority, localCollidingDirections).orElse(newGravity);
+                }
+                if(currentGravity != null && !localCollidingDirections.contains(Direction.DOWN)) {
+                    //Outside corner snap (if the player just left the ground)
+                    newGravity = getOutsideCornerSnapDirection(currentGravity, newGravity, movement).orElse(newGravity);
+                }
+            }
+            Direction currentGravityDirection = GravityChangerAPI.getGravityDirection(player, AmethystGravity.FIELD_GRAVITY_SOURCE);
+            //Set gravity
+            if(newGravity == null){
+                GravityChangerAPI.setGravityDirectionAdvanced(player, AmethystGravity.FIELD_GRAVITY_SOURCE, null, PacketByteBufs.create(), true, true);
+            }else{
+                //TODO: if velocity is large, it shouldn't rotate
+                boolean rotatePerspective = arePerpendicular(currentGravityDirection, newGravity.direction());
+                GravityChangerAPI.setGravityDirectionAdvanced(player, AmethystGravity.FIELD_GRAVITY_SOURCE, newGravity.direction(), PacketByteBufs.create(), rotatePerspective, rotatePerspective);
+            }
+            setFieldGravity(newGravity);
 
-                //Remove gravityEffects from directions2 that are of the same direction as current gravity
-                final Direction currentGravityDirection = currentGravity.direction();
-                directions2 = directions2.stream().filter(g -> g.direction() != currentGravityDirection).toList();
-                //Find the elements of directions2 which have the lowest volume
-                var optionalMin = directions2.stream().map(GravityEffect::volume).min(Double::compare);
-                if (optionalMin.isPresent()) {
-                    final double lowestVolume2 = optionalMin.get();
-                    List<GravityEffect> highestPriority2 = directions2.stream().filter(g -> g.volume() == lowestVolume2).toList();
-                    //Inside corner snap
-                    if (lowestVolume >= lowestVolume2) {
-                        newGravity = getInsideCornerSnapDirection(player, currentGravity, highestPriority2).orElse(newGravity);
+            //Clear direction pool
+            getFieldList().clear();
+            getLowerFieldList().clear();
+            args.set(1, player.getVelocity());
+        }
+    }
+    
+    private Optional<GravityEffect> getInsideCornerSnapDirection(GravityEffect currentGravity, List<GravityEffect> effects, List<Direction> localCollidingDirections) {
+        for(Direction localDirection : localCollidingDirections){
+            if(localDirection != Direction.UP && localDirection != Direction.DOWN) {
+                //collidingDirections will be relative to the player's gravity, we need to convert to be relative to the world
+                Direction globalDirection = RotationUtil.dirPlayerToWorld(localDirection, currentGravity.direction());
+                Optional<GravityEffect> effect = effects.stream().filter(ge -> ge.direction() == globalDirection).findFirst();
+                if (effect.isPresent()) {
+                    return effect;
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Optional<GravityEffect> getOutsideCornerSnapDirection(GravityEffect currentGravity, @Nullable GravityEffect newGravity, Vec3d movement) {
+        //If the new gravity effect is more than 4 times larger than the current one
+        if(newGravity == null || currentGravity.volume() < newGravity.volume() / 4.0) {
+            ArrayList<GravityEffect> effectsBelowPlayer = getLowerFieldList();
+            Optional<GravityEffect> min = effectsBelowPlayer.stream().min(Comparator.comparingDouble(GravityEffect::volume));
+            if(min.isPresent()){
+                double minVolume = min.get().volume();
+                effectsBelowPlayer.removeIf(ge -> ge.volume() > minVolume);
+                //Get horizontal directions and sort by close-ness to velocity
+                Vec3d velocity = RotationUtil.vecPlayerToWorld(movement, currentGravity.direction());
+                List<Direction> hDir = getHorizontalDirections();
+                hDir.sort((d1, d2) -> {
+                    double dot1 = velocity.dotProduct(new Vec3d(d1.getUnitVector()));
+                    double dot2 = velocity.dotProduct(new Vec3d(d2.getUnitVector()));
+                    return Double.compare(dot1, dot2);
+                });
+                //Go through directions in order of close-ness to velocity
+                for(Direction d : hDir){
+                    Optional<GravityEffect> effect = effectsBelowPlayer.stream().filter(g -> g.direction() == d).findFirst();
+                    if(effect.isPresent()){
+                        return effect;
                     }
                 }
             }
-            //Set gravity
-            if (currentGravity.direction() != newGravity.direction()) {
-                //TODO: if velocity is large, it shouldn't rotate
-                boolean rotatePerspective = arePerpendicular(currentGravity.direction(), newGravity.direction());
-                GravityChangerAPI.setGravityDirectionAdvancedClient(player, newGravity.direction(), rotatePerspective, rotatePerspective);
-                setTimeSinceLastGravityChange(0);
-            }
-            setCurrentGravityEffect(newGravity);
         }
-        //Clear direction pool
-        getGravityData().clear();
-        getGravityData2().clear();
-    }
-
-    private Optional<GravityEffect> getInsideCornerSnapDirection(ClientPlayerEntity player, GravityEffect currentGravity, List<GravityEffect> effects) {
-        Optional<GravityEffect> effectMin = effects.stream()
-                .filter(e -> e.type() == GravityEffect.Type.PLATE)
-                .filter(e -> arePerpendicular(e.direction(), currentGravity.direction()))
-                .min((e1, e2) -> {
-                    Vec3d platePos1 = PlatingBlock.getPlatePosition(e1.direction(), e1.source());
-                    Vec3d platePos2 = PlatingBlock.getPlatePosition(e2.direction(), e2.source());
-                    double distance1 = platePos1.distanceTo(player.getPos());
-                    double distance2 = platePos2.distanceTo(player.getPos());
-                    return Double.compare(distance1, distance2);
-                });
-        effectMin.ifPresent((e) -> {
-            Vec3d pos = player.getPos();
-            Vec3d delta = new Vec3d(currentGravity.direction().getUnitVector()).multiply(-(PlatingBlock.SMALL_GRAVITY_EFFECT_HEIGHT+0.05));
-            pos = pos.add(delta);
-            player.setPos(pos.x, pos.y, pos.z);
-        });
-        return effectMin;
-    }
-
-    private Optional<GravityEffect> getOutsideCornerSnapDirection(ClientPlayerEntity player, GravityEffect currentGravity) {
-        //Get the blockstate below the player relative to their gravity
-        Vec3d gVec = new Vec3d(currentGravity.direction().getUnitVector()).multiply(0.1);
-        Vec3d pos = player.getPos().add(gVec);
-        BlockPos blockPos = new BlockPos(pos);
-        BlockState blockState = player.getWorld().getBlockState(blockPos);
-        //If the block is a gravity plate
-        Optional<GravityEffect> effect = Optional.empty();
-        if (blockState.getBlock() instanceof PlatingBlock) {
-            final Vec3d currentPlatePos = PlatingBlock.getPlatePosition(currentGravity.direction(), currentGravity.source());
-            effect = PlatingBlock.getDirections(blockState).stream()
-                    .filter(d -> arePerpendicular(d, currentGravity.direction()))
-                    .min((Direction d1, Direction d2) -> {
-                        Vec3d platePos1 = PlatingBlock.getPlatePosition(d1, blockPos);
-                        Vec3d platePos2 = PlatingBlock.getPlatePosition(d2, blockPos);
-                        double distance1 = platePos1.distanceTo(currentPlatePos);
-                        double distance2 = platePos2.distanceTo(currentPlatePos);
-                        return Double.compare(distance1, distance2);
-                    })
-                    .map(direction -> PlatingBlock.getLargeGravityEffect(direction, blockPos));
-        }
-        return effect;
+        return Optional.empty();
     }
 
     private static boolean arePerpendicular(Direction dir0, Direction dir1){
         return dir0 != dir1 && dir0 != dir1.getOpposite();
+    }
+
+    private List<Direction> getHorizontalDirections(){
+        ArrayList<Direction> directions = new ArrayList<>();
+        //Get all horizontal directions
+        directions.add(Direction.NORTH);
+        directions.add(Direction.SOUTH);
+        directions.add(Direction.EAST);
+        directions.add(Direction.WEST);
+        //Convert to world direction
+        Direction gravityDirection = getFieldGravity().direction();
+        directions.replaceAll(direction -> RotationUtil.dirPlayerToWorld(direction, gravityDirection));
+        return directions;
     }
 }
