@@ -54,6 +54,9 @@ public abstract class ClientPlayerEntityMixin implements GravityData {
         Vec3d movement = args.get(1);
         ClientPlayerEntity player = (ClientPlayerEntity) (Object) this;
         if(movementType == MovementType.SELF && movement == player.getVelocity()) {
+            AmethystGravity.LOGGER.info("FIELDS: ");
+            AmethystGravity.LOGGER.info(getFieldList());
+            AmethystGravity.LOGGER.info(getLowerFieldList());
             //Init vars
             final GravityEffect currentGravity = getFieldGravity();
             GravityEffect newGravity = null;
@@ -90,17 +93,13 @@ public abstract class ClientPlayerEntityMixin implements GravityData {
                     newGravity = getOutsideCornerSnapDirection(currentGravity, newGravity, movement).orElse(newGravity);
                 }
             }
-            Direction currentGravityDirection = GravityChangerAPI.getGravityDirection(player, AmethystGravity.FIELD_GRAVITY_SOURCE);
             //Set gravity
-            if(newGravity == null){
-                GravityChangerAPI.setGravityDirectionAdvanced(player, AmethystGravity.FIELD_GRAVITY_SOURCE, null, PacketByteBufs.create(), true, true);
-            }else{
-                //TODO: if velocity is large, it shouldn't rotate
-                boolean rotatePerspective = arePerpendicular(currentGravityDirection, newGravity.direction());
-                GravityChangerAPI.setGravityDirectionAdvanced(player, AmethystGravity.FIELD_GRAVITY_SOURCE, newGravity.direction(), PacketByteBufs.create(), rotatePerspective, rotatePerspective);
-            }
+            Direction currentDirection = GravityChangerAPI.getGravityDirection(player);
+            Direction newDirection = (newGravity == null) ? null : newGravity.direction();
+            Direction resultantDirection = GravityChangerAPI.getGravityDirectionAfterChange(player, AmethystGravity.FIELD_GRAVITY_SOURCE, newDirection);
+            boolean rotatePerspective = arePerpendicular(currentDirection, resultantDirection);//TODO: if velocity is large, it shouldn't rotate
+            GravityChangerAPI.setGravityDirectionAdvanced(player, AmethystGravity.FIELD_GRAVITY_SOURCE, newDirection, PacketByteBufs.create(), rotatePerspective, rotatePerspective);
             setFieldGravity(newGravity);
-
             //Clear direction pool
             getFieldList().clear();
             getLowerFieldList().clear();
