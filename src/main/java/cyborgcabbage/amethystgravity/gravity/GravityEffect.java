@@ -15,19 +15,23 @@ import java.util.List;
 public record GravityEffect(Direction direction, double volume, BlockPos source) {
 
     public static Box getGravityEffectCollider(PlayerEntity player){
-        Vec3d pos1 = RotationUtil.vecPlayerToWorld(0.35, 0.7, 0.35, GravityChangerAPI.getAppliedGravityDirection(player));
-        Vec3d pos2 = RotationUtil.vecPlayerToWorld(-0.35, 0.0, -0.35, GravityChangerAPI.getAppliedGravityDirection(player));
+        var d = player.getDimensions(player.getPose());
+        double hw = d.width / 2.0;
+        Vec3d pos1 = RotationUtil.vecPlayerToWorld(hw, 0.6, hw, GravityChangerAPI.getAppliedGravityDirection(player));
+        Vec3d pos2 = RotationUtil.vecPlayerToWorld(-hw, 0.0, -hw, GravityChangerAPI.getAppliedGravityDirection(player));
         return new Box(pos1, pos2).offset(player.getPos());
     }
 
     public static Box getLowerGravityEffectCollider(PlayerEntity player){
-        Vec3d pos1 = RotationUtil.vecPlayerToWorld(0.35, -0.1, 0.35, GravityChangerAPI.getAppliedGravityDirection(player));
-        Vec3d pos2 = RotationUtil.vecPlayerToWorld(-0.35, 0.0, -0.35, GravityChangerAPI.getAppliedGravityDirection(player));
+        var d = player.getDimensions(player.getPose());
+        double hw = d.width / 2.0;
+        Vec3d pos1 = RotationUtil.vecPlayerToWorld(hw, -0.1, hw, GravityChangerAPI.getAppliedGravityDirection(player));
+        Vec3d pos2 = RotationUtil.vecPlayerToWorld(-hw, 0.0, -hw, GravityChangerAPI.getAppliedGravityDirection(player));
         return new Box(pos1, pos2).offset(player.getPos());
     }
 
     public static void applyGravityEffectToPlayers(GravityEffect gravityEffect, Box box, World world){
-        List<ClientPlayerEntity> playerEntities = world.getEntitiesByClass(ClientPlayerEntity.class, box.expand(0.2), e -> true);
+        List<ClientPlayerEntity> playerEntities = world.getEntitiesByClass(ClientPlayerEntity.class, box.expand(0.5), e -> true);
         for (ClientPlayerEntity player : playerEntities) {
             //Get player collider for gravity effects
             Box gravityEffectCollider = (gravityEffect.direction().getOpposite() == GravityChangerAPI.getGravityDirection(player)) ? player.getBoundingBox() : GravityEffect.getGravityEffectCollider(player);
