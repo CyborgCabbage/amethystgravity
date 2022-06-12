@@ -1,25 +1,29 @@
 {
   "variants": {
     "facing=down": {
-      "model": "minecraft:block/dispenser_vertical",
+      "model": "amethystgravity:block/field_generator",
       "x": 180
     },
     "facing=east": {
-      "model": "minecraft:block/dispenser",
+      "model": "amethystgravity:block/field_generator",
+      "x": 90,
       "y": 90
     },
     "facing=north": {
-      "model": "minecraft:block/dispenser"
+      "model": "amethystgravity:block/field_generator",
+      "x": 90
     },
     "facing=south": {
-      "model": "minecraft:block/dispenser",
+      "model": "amethystgravity:block/field_generator",
+      "x": 90,
       "y": 180
     },
     "facing=up": {
-      "model": "minecraft:block/dispenser_vertical"
+      "model": "amethystgravity:block/field_generator"
     },
     "facing=west": {
-      "model": "minecraft:block/dispenser",
+      "model": "amethystgravity:block/field_generator",
+      "x": 90,
       "y": 270
     }
   }

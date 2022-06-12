@@ -96,10 +96,6 @@ public abstract class ClientPlayerEntityMixin implements GravityData {
             if(oldDirection != newDirection) {
                 Direction activeDirection = GravityChangerAPI.getGravityDirection(player);
                 Direction resultantDirection = GravityChangerAPI.getGravityDirectionAfterChange(player, AmethystGravity.FIELD_GRAVITY_SOURCE, newDirection);
-                AmethystGravity.LOGGER.info("Rotation Details");
-                AmethystGravity.LOGGER.info(activeDirection);
-                AmethystGravity.LOGGER.info(newDirection);
-                AmethystGravity.LOGGER.info(resultantDirection);
                 boolean rotatePerspective = arePerpendicular(activeDirection, resultantDirection);//TODO: if velocity is large, it shouldn't rotate
                 GravityChangerAPI.setGravityDirectionAdvanced(player, AmethystGravity.FIELD_GRAVITY_SOURCE, newDirection, PacketByteBufs.create(), rotatePerspective, rotatePerspective);
             }

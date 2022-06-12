@@ -1,10 +1,13 @@
 package cyborgcabbage.amethystgravity;
 
 import cyborgcabbage.amethystgravity.block.FieldGeneratorBlock;
+import cyborgcabbage.amethystgravity.block.PlanetFieldGeneratorBlock;
 import cyborgcabbage.amethystgravity.block.PlatingBlock;
 import cyborgcabbage.amethystgravity.block.entity.FieldGeneratorBlockEntity;
+import cyborgcabbage.amethystgravity.block.entity.PlanetFieldGeneratorBlockEntity;
 import cyborgcabbage.amethystgravity.block.entity.PlatingBlockEntity;
 import cyborgcabbage.amethystgravity.block.ui.FieldGeneratorScreenHandler;
+import cyborgcabbage.amethystgravity.block.ui.PlanetFieldGeneratorScreenHandler;
 import me.andrew.gravitychanger.api.GravitySource;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
@@ -33,6 +36,10 @@ public class AmethystGravity implements ModInitializer {
 
 	public static Identifier FIELD_GRAVITY_SOURCE = new Identifier(MOD_ID, "field_gravity_source");
 
+	/*CLIENT -> SERVER
+	* FieldGeneratorBlockEntity.Button button
+    * boolean shift
+	* */
 	public static Identifier FIELD_GENERATOR_MENU_CHANNEL = new Identifier(MOD_ID, "field_generator_menu");
 
 	public static final ItemGroup GRAVITY_ITEM_GROUP = FabricItemGroupBuilder.build(
@@ -45,9 +52,14 @@ public class AmethystGravity implements ModInitializer {
 	public static final Block FIELD_GENERATOR_BLOCK = new FieldGeneratorBlock(FabricBlockSettings.of(Material.STONE).strength(3.5f).requiresTool());
 	public static BlockEntityType<FieldGeneratorBlockEntity> FIELD_GENERATOR_BLOCK_ENTITY;
 
+	public static final Block PLANET_FIELD_GENERATOR_BLOCK = new PlanetFieldGeneratorBlock(FabricBlockSettings.of(Material.STONE).strength(3.5f).requiresTool());
+	public static BlockEntityType<PlanetFieldGeneratorBlockEntity> PLANET_FIELD_GENERATOR_BLOCK_ENTITY;
+
 	public static final DefaultParticleType GRAVITY_INDICATOR = FabricParticleTypes.simple();
 
 	public static final ScreenHandlerType<FieldGeneratorScreenHandler> FIELD_GENERATOR_SCREEN_HANDLER = new ScreenHandlerType<>(FieldGeneratorScreenHandler::new);
+
+	public static final ScreenHandlerType<PlanetFieldGeneratorScreenHandler> PLANET_FIELD_GENERATOR_SCREEN_HANDLER = new ScreenHandlerType<>(PlanetFieldGeneratorScreenHandler::new);
 
 	@Override
 	public void onInitialize() {
@@ -57,17 +69,24 @@ public class AmethystGravity implements ModInitializer {
 		registerBlockAndItem("field_generator", FIELD_GENERATOR_BLOCK);
 		FIELD_GENERATOR_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "field_generator_block_entity"), FabricBlockEntityTypeBuilder.create(FieldGeneratorBlockEntity::new, FIELD_GENERATOR_BLOCK).build());
 
+		registerBlockAndItem("planet_field_generator", PLANET_FIELD_GENERATOR_BLOCK);
+		PLANET_FIELD_GENERATOR_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "planet_field_generator_block_entity"), FabricBlockEntityTypeBuilder.create(PlanetFieldGeneratorBlockEntity::new, PLANET_FIELD_GENERATOR_BLOCK).build());
+
 		Registry.register(Registry.PARTICLE_TYPE, new Identifier(MOD_ID, "gravity_indicator"), GRAVITY_INDICATOR);
 
 		Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "field_generator"), FIELD_GENERATOR_SCREEN_HANDLER);
+		Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "planet_field_generator"), PLANET_FIELD_GENERATOR_SCREEN_HANDLER);
 
 		ServerPlayNetworking.registerGlobalReceiver(FIELD_GENERATOR_MENU_CHANNEL, (server, player, handler, buf, sender) -> {
-			int height = buf.readInt();
-			int width = buf.readInt();
-			int depth = buf.readInt();
+			int button = buf.readVarInt();
+			boolean shift = buf.readBoolean();
 			server.execute(() -> {
 				if(player.currentScreenHandler instanceof FieldGeneratorScreenHandler screenHandler){
-					screenHandler.setData(height, width, depth);
+					FieldGeneratorBlockEntity.Button e = FieldGeneratorBlockEntity.Button.values()[button];
+					screenHandler.pressButton(e, shift);
+				}else if(player.currentScreenHandler instanceof PlanetFieldGeneratorScreenHandler screenHandler){
+					PlanetFieldGeneratorBlockEntity.Button e = PlanetFieldGeneratorBlockEntity.Button.values()[button];
+					screenHandler.pressButton(e, shift);
 				}
 			});
 		});

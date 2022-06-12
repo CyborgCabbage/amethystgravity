@@ -37,6 +37,15 @@ public class FieldGeneratorBlockEntity extends BlockEntity implements NamedScree
     private int width = 10;
     private int depth = 10;
 
+    public enum Button {
+        HEIGHT_UP,
+        HEIGHT_DOWN,
+        WIDTH_UP,
+        WIDTH_DOWN,
+        DEPTH_UP,
+        DEPTH_DOWN
+    }
+
     private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
         @Override
         public int get(int index) {
@@ -155,17 +164,5 @@ public class FieldGeneratorBlockEntity extends BlockEntity implements NamedScree
     @Override
     public NbtCompound toInitialChunkDataNbt() {
         return createNbt();
-    }
-
-    public void setParameters(int _height, int _width, int _depth){
-        if(height <= 0) height = 10;
-        if(width <= 0) width = 10;
-        if(depth <= 0) depth = 10;
-        if(height + _height > 0) height += _height;
-        if(width + _width > 0) width += _width;
-        if(depth + _depth > 0) depth += _depth;
-        markDirty();
-        BlockState state = world.getBlockState(pos);
-        world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
     }
 }

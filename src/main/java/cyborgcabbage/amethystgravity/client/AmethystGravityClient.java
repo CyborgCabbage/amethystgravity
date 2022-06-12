@@ -2,6 +2,7 @@ package cyborgcabbage.amethystgravity.client;
 
 import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.block.ui.FieldGeneratorScreen;
+import cyborgcabbage.amethystgravity.block.ui.PlanetFieldGeneratorScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
@@ -30,6 +31,7 @@ public class AmethystGravityClient implements ClientModInitializer {
          * In this example, we'll use FlameParticle's Factory.*/
         ParticleFactoryRegistry.getInstance().register(AmethystGravity.GRAVITY_INDICATOR, FlameParticle.Factory::new);
         HandledScreens.register(AmethystGravity.FIELD_GENERATOR_SCREEN_HANDLER, FieldGeneratorScreen::new);
+        HandledScreens.register(AmethystGravity.PLANET_FIELD_GENERATOR_SCREEN_HANDLER, PlanetFieldGeneratorScreen::new);
         /*ClientTickEvents.END_CLIENT_TICK.register((minecraftClient) -> {
             ClientPlayerEntity player = minecraftClient.player;
             if(player != null){

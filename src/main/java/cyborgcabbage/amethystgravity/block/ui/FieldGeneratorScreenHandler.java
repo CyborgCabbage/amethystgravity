@@ -29,23 +29,25 @@ public class FieldGeneratorScreenHandler extends ScreenHandler {
     }
 
     //Server
-    public void setData(int height, int width, int depth){
-        propertyDelegate.set(0, propertyDelegate.get(0)+height);
-        propertyDelegate.set(1, propertyDelegate.get(1)+width);
-        propertyDelegate.set(2, propertyDelegate.get(2)+depth);
+    public void pressButton(FieldGeneratorBlockEntity.Button button, boolean shift){
+        int magnitude = shift ? 1 : 10;
+        int index = switch(button){
+            case HEIGHT_UP, HEIGHT_DOWN -> 0;
+            case WIDTH_UP, WIDTH_DOWN -> 1;
+            case DEPTH_UP, DEPTH_DOWN -> 2;
+        };
+        int sign = switch(button){
+            case HEIGHT_UP, DEPTH_UP, WIDTH_UP -> 1;
+            case HEIGHT_DOWN, DEPTH_DOWN, WIDTH_DOWN -> -1;
+        };
+        int newValue = propertyDelegate.get(index)+magnitude*sign;
+        if(newValue <= 0) newValue = magnitude;
+        propertyDelegate.set(index, newValue);
         context.run((world, pos) -> {
             ServerWorld serverWorld = (ServerWorld)world;
             serverWorld.markDirty(pos);
             serverWorld.getChunkManager().markForUpdate(pos);
         });
-        /*if(context != null){
-            context.run((world, blockPos) -> {
-                BlockEntity blockEntity = world.getBlockEntity(blockPos);
-                if(blockEntity instanceof FieldGeneratorBlockEntity fieldGenerator){
-                    fieldGenerator.setParameters(height, width, depth);
-                }
-            });
-        }*/
     }
 
     //Client
