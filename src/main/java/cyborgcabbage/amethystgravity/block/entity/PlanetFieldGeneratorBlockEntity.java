@@ -27,92 +27,59 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
-public class PlanetFieldGeneratorBlockEntity extends BlockEntity implements NamedScreenHandlerFactory {
+public class PlanetFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity {
     private static final String RADIUS_KEY = "Radius";
     private int radius = 10;
 
-    public enum Button {
-        RADIUS_UP,
-        RADIUS_DOWN,
-    }
-
-    private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
-        @Override
-        public int get(int index) {
-            if (index == 0) {
-                return radius;
-            } else {
-                throw new IndexOutOfBoundsException(index);
-            }
-        }
-
-        @Override
-        public void set(int index, int value) {
-            if (index == 0) {
-                radius = value;
-            } else {
-                throw new IndexOutOfBoundsException(index);
-            }
-        }
-
-        @Override
-        public int size() {
-            return 1;
-        }
-    };
-
     public PlanetFieldGeneratorBlockEntity(BlockPos pos, BlockState state) {
         super(AmethystGravity.PLANET_FIELD_GENERATOR_BLOCK_ENTITY, pos, state);
+        propertyDelegate = new PropertyDelegate() {
+            @Override
+            public int get(int index) {
+                if (index == 0) {
+                    return radius;
+                } else {
+                    throw new IndexOutOfBoundsException(index);
+                }
+            }
+
+            @Override
+            public void set(int index, int value) {
+                if (index == 0) {
+                    radius = value;
+                } else {
+                    throw new IndexOutOfBoundsException(index);
+                }
+            }
+
+            @Override
+            public int size() {
+                return 1;
+            }
+        };
     }
 
-    public static void clientTick(World world, BlockPos blockPos, BlockState blockState, PlanetFieldGeneratorBlockEntity blockEntity) {
-        blockEntity.clientTick((ClientWorld)world, blockPos, blockState);
-    }
-
-    private void clientTick(ClientWorld world, BlockPos blockPos, BlockState blockState){
+    protected void clientTick(ClientWorld world, BlockPos blockPos, BlockState blockState){
         //Applying gravity effect
-        Box box = getGravityEffectBox(blockPos, radius / 10.0);
+        Box box = getGravityEffectBox();
         GravityEffect.applySixWayGravityEffectToPlayers(getGravityEffect(blockPos), box, world);
         //Particles
-        Vec3d pVel = new Vec3d(0.0,0.0,0.0);
-        Vec3d boxOrigin = new Vec3d(box.minX,box.minY,box.minZ);
-        Vec3d boxSize = new Vec3d(box.getXLength(),box.getYLength(),box.getZLength());
-        Random rand = world.getRandom();
-        double amount = getSurfaceArea()/20.0;
-        double temp = rand.nextDouble();
-        while(amount > temp){
-            Vec3d randomVec = new Vec3d(rand.nextDouble(), rand.nextDouble(), rand.nextDouble());
-            Vec3d pPos = boxOrigin.add(boxSize.multiply(randomVec));
-            DefaultParticleType particleType = AmethystGravity.GRAVITY_INDICATOR;
-            if(!world.getBlockState(new BlockPos(pPos)).isOpaque())
-                world.addParticle(particleType,pPos.x,pPos.y,pPos.z,pVel.x,pVel.y,pVel.z);
-            amount--;
-        }
+        spawnParticles(box, new Vec3d(0, 0, 0));
     }
 
-    private static Box getGravityEffectBox(BlockPos blockPos, double radius){
+    protected Box getGravityEffectBox(){
+        BlockPos blockPos = getPos();
         Vec3d pos1 = new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-        Vec3d pos2 = pos1.add(0.5,0.5,0.5);
-        return new Box(pos1, pos2).expand(radius);
+        Vec3d pos2 = pos1.add(1, 1, 1);
+        return new Box(pos1, pos2).expand(getRadius());
     }
 
     private GravityEffect getGravityEffect(BlockPos blockPos){
         return new GravityEffect(null, getVolume(), blockPos);
     }
 
-    private double getVolume(){
-        double r = radius / 10.0;
-        return 8*r*r*r;
-    }
-
-    private double getSurfaceArea(){
-        double r = radius / 10.0;
-        return 24*r*r;
-    }
-
-    @Override
-    public Text getDisplayName() {
-        return new TranslatableText(getCachedState().getBlock().getTranslationKey());
+    public double getRadius(){
+        return radius / 10.0;
     }
 
     @Nullable
@@ -131,14 +98,5 @@ public class PlanetFieldGeneratorBlockEntity extends BlockEntity implements Name
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
         radius = nbt.getInt(RADIUS_KEY);
-    }
-
-    public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
-    }
-
-    @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
     }
 }

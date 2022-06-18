@@ -3,9 +3,12 @@ package cyborgcabbage.amethystgravity.client;
 import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.block.ui.FieldGeneratorScreen;
 import cyborgcabbage.amethystgravity.block.ui.PlanetFieldGeneratorScreen;
+import cyborgcabbage.amethystgravity.client.render.block.entity.FieldGeneratorBlockEntityRenderer;
+import cyborgcabbage.amethystgravity.client.render.block.entity.PlanetFieldGeneratorBlockEntityRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.particle.FlameParticle;
@@ -38,5 +41,7 @@ public class AmethystGravityClient implements ClientModInitializer {
                 AmethystGravity.LOGGER.info(player == minecraftClient.getCameraEntity());
             }
         });*/
+        BlockEntityRendererRegistry.register(AmethystGravity.FIELD_GENERATOR_BLOCK_ENTITY, FieldGeneratorBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.register(AmethystGravity.PLANET_FIELD_GENERATOR_BLOCK_ENTITY, PlanetFieldGeneratorBlockEntityRenderer::new);
     }
 }

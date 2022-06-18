@@ -18,50 +18,10 @@ import net.minecraft.util.Identifier;
 import java.awt.*;
 import java.text.DecimalFormat;
 
-public class FieldGeneratorScreen extends HandledScreen<FieldGeneratorScreenHandler> {
-    private static final Identifier TEXTURE = new Identifier(AmethystGravity.MOD_ID, "textures/gui/blank.png");
-    private final FieldGeneratorScreenHandler sh;
+public class FieldGeneratorScreen extends AbstractFieldGeneratorScreen<FieldGeneratorScreenHandler>{
 
     public FieldGeneratorScreen(FieldGeneratorScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
-        playerInventoryTitleY = -100;
-        sh = handler;
-    }
-
-    @Override
-    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TEXTURE);
-        int x = (width - backgroundWidth) / 2;
-        int y = (height - backgroundHeight) / 2;
-        drawTexture(matrices, x, y, 0, 0, backgroundWidth, backgroundHeight);
-    }
-
-    @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, delta);
-        //Draw text
-        int tX = (width) / 2;
-        int tY = (height - textRenderer.fontHeight) / 2 + 6;
-        DecimalFormat df = new DecimalFormat("0.0");
-        //Draw values
-        String heightValue = df.format(sh.getHeight() / 10.0);
-        String widthValue = df.format(sh.getWidth() / 10.0);
-        String depthValue = df.format(sh.getDepth() / 10.0);
-        textRenderer.draw(matrices, heightValue, tX-textRenderer.getWidth(heightValue)/2.f-50, tY-20, Color.DARK_GRAY.getRGB());
-        textRenderer.draw(matrices, widthValue, tX-textRenderer.getWidth(widthValue)/2.f, tY-20, Color.DARK_GRAY.getRGB());
-        textRenderer.draw(matrices, depthValue, tX-textRenderer.getWidth(depthValue)/2.f+50, tY-20, Color.DARK_GRAY.getRGB());
-        //Draw labels
-        String heightLabel = "Height";
-        String widthLabel = "Width";
-        String depthLabel = "Depth";
-        textRenderer.draw(matrices, heightLabel, tX-textRenderer.getWidth(heightLabel)/2.f+0.5f-50, tY-60, Color.DARK_GRAY.getRGB());
-        textRenderer.draw(matrices, widthLabel, tX-textRenderer.getWidth(widthLabel)/2.f+0.5f, tY-60, Color.DARK_GRAY.getRGB());
-        textRenderer.draw(matrices, depthLabel, tX-textRenderer.getWidth(depthLabel)/2.f+0.5f+50, tY-60, Color.DARK_GRAY.getRGB());
-
-        drawMouseoverTooltip(matrices, mouseX, mouseY);
     }
 
     @Override
@@ -84,10 +44,15 @@ public class FieldGeneratorScreen extends HandledScreen<FieldGeneratorScreenHand
         addDrawableChild(new ButtonWidget(bX+50, bY, bWidth, bHeight, new TranslatableText("amethystgravity.fieldGenerator.decrease"), button -> sendMenuUpdatePacket(FieldGeneratorBlockEntity.Button.DEPTH_DOWN)));
     }
 
-    private void sendMenuUpdatePacket(FieldGeneratorBlockEntity.Button button){
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeEnumConstant(button);
-        buf.writeBoolean(hasShiftDown());
-        ClientPlayNetworking.send(AmethystGravity.FIELD_GENERATOR_MENU_CHANNEL, buf);
+    @Override
+    protected void renderValuesAndLabels(MatrixStack matrices) {
+        //Draw values
+        drawValue(matrices, sh.getHeight()*.1, -50);
+        drawValue(matrices, sh.getWidth()*.1, 0);
+        drawValue(matrices, sh.getDepth()*.1, 50);
+        //Draw labels
+        drawLabel(matrices, "Height", -50);
+        drawLabel(matrices, "Width", 0);
+        drawLabel(matrices, "Depth", 50);
     }
 }

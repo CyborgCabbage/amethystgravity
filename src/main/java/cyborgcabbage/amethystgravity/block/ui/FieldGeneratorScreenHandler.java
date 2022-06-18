@@ -1,47 +1,40 @@
 package cyborgcabbage.amethystgravity.block.ui;
 
 import cyborgcabbage.amethystgravity.AmethystGravity;
-import cyborgcabbage.amethystgravity.block.entity.FieldGeneratorBlockEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import cyborgcabbage.amethystgravity.block.entity.AbstractFieldGeneratorBlockEntity;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.ArrayPropertyDelegate;
-import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.screen.*;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.World;
 
-public class FieldGeneratorScreenHandler extends ScreenHandler {
-    private final ScreenHandlerContext context;
-    private final PropertyDelegate propertyDelegate;
+public class FieldGeneratorScreenHandler extends AbstractFieldGeneratorScreenHandler<FieldGeneratorScreenHandler> {
     //Client
     public FieldGeneratorScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, new ArrayPropertyDelegate(3), ScreenHandlerContext.EMPTY);
+        super(AmethystGravity.FIELD_GENERATOR_SCREEN_HANDLER, syncId, playerInventory, 3);
     }
 
     //Server
-    public FieldGeneratorScreenHandler(int syncId, PropertyDelegate _propertyDelegate, ScreenHandlerContext _context) {
-        super(AmethystGravity.FIELD_GENERATOR_SCREEN_HANDLER, syncId);
-        context = _context;
-        propertyDelegate = _propertyDelegate;
-        addProperties(propertyDelegate);
+    public FieldGeneratorScreenHandler(int syncId, PropertyDelegate propertyDelegate, ScreenHandlerContext context) {
+        super(AmethystGravity.FIELD_GENERATOR_SCREEN_HANDLER, syncId, propertyDelegate, context);
     }
 
     //Server
-    public void pressButton(FieldGeneratorBlockEntity.Button button, boolean shift){
+    public void pressButton(AbstractFieldGeneratorBlockEntity.Button button, boolean shift){
         int magnitude = shift ? 1 : 10;
         int index = switch(button){
             case HEIGHT_UP, HEIGHT_DOWN -> 0;
             case WIDTH_UP, WIDTH_DOWN -> 1;
             case DEPTH_UP, DEPTH_DOWN -> 2;
+            default -> throw new IllegalStateException("Unexpected button: " + button);
         };
         int sign = switch(button){
             case HEIGHT_UP, DEPTH_UP, WIDTH_UP -> 1;
             case HEIGHT_DOWN, DEPTH_DOWN, WIDTH_DOWN -> -1;
+            default -> throw new IllegalStateException("Unexpected button: " + button);
         };
         int newValue = propertyDelegate.get(index)+magnitude*sign;
-        if(newValue <= 0) newValue = magnitude;
+        int threshold = index == 0 ? 1 : 10;
+        if(newValue < threshold) newValue = threshold;
         propertyDelegate.set(index, newValue);
         context.run((world, pos) -> {
             ServerWorld serverWorld = (ServerWorld)world;
@@ -64,7 +57,7 @@ public class FieldGeneratorScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public boolean canUse(PlayerEntity player) {
-        return ScreenHandler.canUse(context, player, AmethystGravity.FIELD_GENERATOR_BLOCK);
+    protected Block getBlock() {
+        return AmethystGravity.FIELD_GENERATOR_BLOCK;
     }
 }

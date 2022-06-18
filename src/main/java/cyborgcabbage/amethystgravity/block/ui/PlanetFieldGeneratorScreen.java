@@ -18,42 +18,18 @@ import net.minecraft.util.Identifier;
 import java.awt.*;
 import java.text.DecimalFormat;
 
-public class PlanetFieldGeneratorScreen extends HandledScreen<PlanetFieldGeneratorScreenHandler> {
-    private static final Identifier TEXTURE = new Identifier(AmethystGravity.MOD_ID, "textures/gui/blank.png");
-    private final PlanetFieldGeneratorScreenHandler sh;
+public class PlanetFieldGeneratorScreen extends AbstractFieldGeneratorScreen<PlanetFieldGeneratorScreenHandler> {
 
     public PlanetFieldGeneratorScreen(PlanetFieldGeneratorScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
-        playerInventoryTitleY = -100;
-        sh = handler;
     }
 
     @Override
-    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TEXTURE);
-        int x = (width - backgroundWidth) / 2;
-        int y = (height - backgroundHeight) / 2;
-        drawTexture(matrices, x, y, 0, 0, backgroundWidth, backgroundHeight);
-    }
-
-    @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, delta);
-        //Draw text
-        int tX = (width) / 2;
-        int tY = (height - textRenderer.fontHeight) / 2 + 6;
-        DecimalFormat df = new DecimalFormat("0.0");
+    protected void renderValuesAndLabels(MatrixStack matrices) {
         //Draw values
-        String radiusValue = df.format(sh.getRadius() / 10.0);
-        textRenderer.draw(matrices, radiusValue, tX-textRenderer.getWidth(radiusValue)/2.f, tY-20, Color.DARK_GRAY.getRGB());
+        drawValue(matrices, sh.getRadius()*.1, 0);
         //Draw labels
-        String radiusLabel = "Radius";
-        textRenderer.draw(matrices, radiusLabel, tX-textRenderer.getWidth(radiusLabel)/2.f+0.5f, tY-60, Color.DARK_GRAY.getRGB());
-
-        drawMouseoverTooltip(matrices, mouseX, mouseY);
+        drawLabel(matrices, "Radius", 0);
     }
 
     @Override
@@ -69,11 +45,4 @@ public class PlanetFieldGeneratorScreen extends HandledScreen<PlanetFieldGenerat
         addDrawableChild(new ButtonWidget(bX, bY - 40, bWidth, bHeight, new TranslatableText("amethystgravity.fieldGenerator.increase"), button -> sendMenuUpdatePacket(PlanetFieldGeneratorBlockEntity.Button.RADIUS_UP)));
         addDrawableChild(new ButtonWidget(bX, bY, bWidth, bHeight, new TranslatableText("amethystgravity.fieldGenerator.decrease"), button -> sendMenuUpdatePacket(PlanetFieldGeneratorBlockEntity.Button.RADIUS_DOWN)));
    }
-
-    private void sendMenuUpdatePacket(PlanetFieldGeneratorBlockEntity.Button button){
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeEnumConstant(button);
-        buf.writeBoolean(hasShiftDown());
-        ClientPlayNetworking.send(AmethystGravity.FIELD_GENERATOR_MENU_CHANNEL, buf);
-    }
 }

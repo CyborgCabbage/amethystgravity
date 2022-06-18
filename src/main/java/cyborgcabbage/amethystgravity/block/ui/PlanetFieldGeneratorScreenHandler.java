@@ -2,6 +2,7 @@ package cyborgcabbage.amethystgravity.block.ui;
 
 import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.block.entity.PlanetFieldGeneratorBlockEntity;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ArrayPropertyDelegate;
@@ -10,20 +11,15 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.server.world.ServerWorld;
 
-public class PlanetFieldGeneratorScreenHandler extends ScreenHandler {
-    private final ScreenHandlerContext context;
-    private final PropertyDelegate propertyDelegate;
+public class PlanetFieldGeneratorScreenHandler extends AbstractFieldGeneratorScreenHandler<PlanetFieldGeneratorScreenHandler> {
     //Client
     public PlanetFieldGeneratorScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, new ArrayPropertyDelegate(1), ScreenHandlerContext.EMPTY);
+        super(AmethystGravity.PLANET_FIELD_GENERATOR_SCREEN_HANDLER, syncId, playerInventory, 1);
     }
 
     //Server
-    public PlanetFieldGeneratorScreenHandler(int syncId, PropertyDelegate _propertyDelegate, ScreenHandlerContext _context) {
-        super(AmethystGravity.PLANET_FIELD_GENERATOR_SCREEN_HANDLER, syncId);
-        context = _context;
-        propertyDelegate = _propertyDelegate;
-        addProperties(propertyDelegate);
+    public PlanetFieldGeneratorScreenHandler(int syncId, PropertyDelegate propertyDelegate, ScreenHandlerContext context) {
+        super(AmethystGravity.PLANET_FIELD_GENERATOR_SCREEN_HANDLER, syncId, propertyDelegate, context);
     }
 
     //Server
@@ -33,9 +29,11 @@ public class PlanetFieldGeneratorScreenHandler extends ScreenHandler {
         int sign = switch(button){
             case RADIUS_UP -> 1;
             case RADIUS_DOWN -> -1;
+            default -> throw new IllegalStateException("Unexpected button: " + button);
         };
         int newValue = propertyDelegate.get(index)+magnitude*sign;
-        if(newValue <= 10) newValue = 10;
+        int threshold = 1;
+        if(newValue < threshold) newValue = threshold;
         propertyDelegate.set(index, newValue);
         context.run((world, pos) -> {
             ServerWorld serverWorld = (ServerWorld)world;
@@ -50,7 +48,7 @@ public class PlanetFieldGeneratorScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public boolean canUse(PlayerEntity player) {
-        return ScreenHandler.canUse(context, player, AmethystGravity.PLANET_FIELD_GENERATOR_BLOCK);
+    protected Block getBlock() {
+        return AmethystGravity.PLANET_FIELD_GENERATOR_BLOCK;
     }
 }

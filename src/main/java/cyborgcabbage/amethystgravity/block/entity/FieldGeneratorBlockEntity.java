@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
-public class FieldGeneratorBlockEntity extends BlockEntity implements NamedScreenHandlerFactory {
+public class FieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity {
     private static final String HEIGHT_KEY = "Height";
     private static final String WIDTH_KEY = "Width";
     private static final String DEPTH_KEY = "Depth";
@@ -37,108 +37,77 @@ public class FieldGeneratorBlockEntity extends BlockEntity implements NamedScree
     private int width = 10;
     private int depth = 10;
 
-    public enum Button {
-        HEIGHT_UP,
-        HEIGHT_DOWN,
-        WIDTH_UP,
-        WIDTH_DOWN,
-        DEPTH_UP,
-        DEPTH_DOWN
-    }
-
-    private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
-        @Override
-        public int get(int index) {
-            switch(index){
-                case 0 -> {
-                    return height;
-                }
-                case 1 -> {
-                    return width;
-                }
-                case 2 -> {
-                    return depth;
-                }
-                default -> throw new IndexOutOfBoundsException(index);
-            }
-        }
-
-        @Override
-        public void set(int index, int value) {
-            switch(index){
-                case 0 -> height = value;
-                case 1 -> width = value;
-                case 2 -> depth = value;
-                default -> throw new IndexOutOfBoundsException(index);
-            }
-        }
-
-        @Override
-        public int size() {
-            return 3;
-        }
-    };
-
     public FieldGeneratorBlockEntity(BlockPos pos, BlockState state) {
         super(AmethystGravity.FIELD_GENERATOR_BLOCK_ENTITY, pos, state);
+        propertyDelegate = new PropertyDelegate() {
+            @Override
+            public int get(int index) {
+                switch(index){
+                    case 0 -> {
+                        return height;
+                    }
+                    case 1 -> {
+                        return width;
+                    }
+                    case 2 -> {
+                        return depth;
+                    }
+                    default -> throw new IndexOutOfBoundsException(index);
+                }
+            }
+
+            @Override
+            public void set(int index, int value) {
+                switch(index){
+                    case 0 -> height = value;
+                    case 1 -> width = value;
+                    case 2 -> depth = value;
+                    default -> throw new IndexOutOfBoundsException(index);
+                }
+            }
+
+            @Override
+            public int size() {
+                return 3;
+            }
+        };
     }
 
-    public static void clientTick(World world, BlockPos blockPos, BlockState blockState, FieldGeneratorBlockEntity blockEntity) {
-        blockEntity.clientTick((ClientWorld)world, blockPos, blockState);
-    }
-
-    private void clientTick(ClientWorld world, BlockPos blockPos, BlockState blockState){
+    protected void clientTick(ClientWorld world, BlockPos blockPos, BlockState blockState){
         Direction direction = blockState.get(FieldGeneratorBlock.FACING).getOpposite();
         //Applying gravity effect
-        Box box = getGravityEffectBox(blockPos, direction, height / 10.0, width / 10.0, depth / 10.0);
+        Box box = getGravityEffectBox();
         GravityEffect.applyGravityEffectToPlayers(getGravityEffect(direction, blockPos), box, world);
         //Particles
-        Vec3d pVel = new Vec3d(direction.getUnitVector()).multiply(0.03);
-        Vec3d boxOrigin = new Vec3d(box.minX,box.minY,box.minZ);
-        Vec3d boxSize = new Vec3d(box.getXLength(),box.getYLength(),box.getZLength());
-        Random r = world.getRandom();
-        double amount = getSurfaceArea()/20.0;
-        while(amount > r.nextDouble()){
-            Vec3d randomVec = new Vec3d(r.nextDouble(), r.nextDouble(), r.nextDouble());
-            Vec3d pPos = boxOrigin.add(boxSize.multiply(randomVec));
-            DefaultParticleType particleType = AmethystGravity.GRAVITY_INDICATOR;
-            world.addParticle(particleType,pPos.x,pPos.y,pPos.z,pVel.x,pVel.y,pVel.z);
-            amount--;
-        }
+        spawnParticles(getGravityEffectBox(), new Vec3d(direction.getUnitVector()));
     }
 
-    private Box getGravityEffectBox(BlockPos blockPos, Direction direction, double height, double width, double depth){
+    public Box getGravityEffectBox(){
+        BlockPos blockPos = getPos();
+        Direction direction = getCachedState().get(FieldGeneratorBlock.FACING).getOpposite();
         Vec3d blockCentre = new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()).add(0.5,0.5,0.5);
         Vec3d faceCentre = blockCentre.add(new Vec3d(direction.getUnitVector()).multiply(-0.5));
-        Vec3d pos1 = RotationUtil.vecPlayerToWorld(-0.5*width,0,-0.5*depth, direction);
-        Vec3d pos2 = RotationUtil.vecPlayerToWorld(0.5*width, height,0.5*depth, direction);
+        Vec3d pos1 = RotationUtil.vecPlayerToWorld(-0.5*width*0.1,0,-0.5*depth*0.1, direction);
+        Vec3d pos2 = RotationUtil.vecPlayerToWorld(0.5*width*0.1, height*0.1,0.5*depth*0.1, direction);
         return new Box(pos1, pos2).offset(faceCentre);
     }
 
     private GravityEffect getGravityEffect(Direction direction, BlockPos blockPos){
-        return new GravityEffect(direction, getVolume(), blockPos);
+        return new GravityEffect(direction, getVolume(getGravityEffectBox()), blockPos);
     }
 
-    private double getVolume(){
-        return (height / 10.0)*(width / 10.0)*(depth / 10.0);
+    public Direction getDirection(){
+        return getCachedState().get(FieldGeneratorBlock.FACING).getOpposite();
     }
 
-    private double getSurfaceArea(){
-        double h = height / 10.0;
-        double w = width / 10.0;
-        double d = depth / 10.0;
-        return 2*h*w+2*h*d+2*w*d;
+    public double getHeight(){
+        return height*0.1;
     }
-
-    @Override
-    public Text getDisplayName() {
-        return new TranslatableText(getCachedState().getBlock().getTranslationKey());
+    public double getWidth(){
+        return width*0.1;
     }
-
-    @Nullable
-    @Override
-    public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new FieldGeneratorScreenHandler(syncId, propertyDelegate, ScreenHandlerContext.create(world, getPos()));
+    public double getDepth(){
+        return depth*0.1;
     }
 
     @Override
@@ -157,12 +126,9 @@ public class FieldGeneratorBlockEntity extends BlockEntity implements NamedScree
         depth = nbt.getInt(DEPTH_KEY);
     }
 
-    public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
-    }
-
+    @Nullable
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return createNbt();
+    public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+        return new FieldGeneratorScreenHandler(syncId, propertyDelegate, ScreenHandlerContext.create(world, getPos()));
     }
 }
