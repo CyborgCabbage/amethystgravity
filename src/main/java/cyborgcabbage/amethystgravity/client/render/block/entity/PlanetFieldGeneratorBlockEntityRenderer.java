@@ -82,14 +82,21 @@ public class PlanetFieldGeneratorBlockEntityRenderer extends AbstractFieldGenera
         float diagonal = (float)Math.sqrt(2)*radius;
 
         for (IntPair e : edges) {
-            addVertex(m, n, buffer, outer.get(e.a()), r, -animation);
-            addVertex(m, n, buffer, outer.get(e.b()),-r, -animation);
-            addVertex(m, n, buffer, inner.get(e.b()),-.5f, diagonal-animation);
-            addVertex(m, n, buffer, inner.get(e.a()), .5f, diagonal-animation);
+            if(entity.getPolarity() == 1){
+                addVertex(m, n, buffer, outer.get(e.a()), r,diagonal - animation);
+                addVertex(m, n, buffer, outer.get(e.b()), -r,diagonal - animation);
+                addVertex(m, n, buffer, inner.get(e.b()), -.5f, -animation);
+                addVertex(m, n, buffer, inner.get(e.a()), .5f, -animation);
+            }else {
+                addVertex(m, n, buffer, outer.get(e.a()), r, -animation);
+                addVertex(m, n, buffer, outer.get(e.b()), -r, -animation);
+                addVertex(m, n, buffer, inner.get(e.b()), -.5f, diagonal - animation);
+                addVertex(m, n, buffer, inner.get(e.a()), .5f, diagonal - animation);
+            }
         }
         VertexConsumer buffer2 = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(WALL_TEXTURE));
         for (IntFour f : faces) {
-            renderFaceEdges(m, n, buffer, outer.get(f.a()), outer.get(f.b()), outer.get(f.c()), outer.get(f.d()));
+            renderFaceEdges(m, n, buffer2, outer.get(f.a()), outer.get(f.b()), outer.get(f.c()), outer.get(f.d()));
         }
     }
 }

@@ -31,4 +31,6 @@ public abstract class AbstractFieldGeneratorScreenHandler<T extends AbstractFiel
     protected abstract Block getBlock();
 
     public abstract void pressButton(AbstractFieldGeneratorBlockEntity.Button button, boolean shift);
+
+    public abstract int getPolarity();
 }

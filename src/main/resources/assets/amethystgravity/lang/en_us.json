@@ -8,5 +8,7 @@
   "amethystgravity.fieldGenerator.height": "Height",
   "amethystgravity.fieldGenerator.width": "Width",
   "amethystgravity.fieldGenerator.depth": "Depth",
-  "amethystgravity.fieldGenerator.radius": "Radius"
+  "amethystgravity.fieldGenerator.radius": "Radius",
+  "amethystgravity.fieldGenerator.attract": "Polarity: Attract",
+  "amethystgravity.fieldGenerator.repel": "Polarity: Repel"
 }

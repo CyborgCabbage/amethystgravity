@@ -46,7 +46,7 @@ public record GravityEffect(Direction direction, double volume, BlockPos source)
         }
     }
 
-    public static void applySixWayGravityEffectToPlayers(GravityEffect gravityEffect, Box box, World world){
+    public static void applySixWayGravityEffectToPlayers(GravityEffect gravityEffect, Box box, World world, boolean opposite){
         List<ClientPlayerEntity> playerEntities = world.getEntitiesByClass(ClientPlayerEntity.class, box.expand(0.5), e -> true);
         for (ClientPlayerEntity player : playerEntities) {
             Vec3d boxCentre = box.getCenter();
@@ -56,6 +56,7 @@ public record GravityEffect(Direction direction, double volume, BlockPos source)
                 double dis2 = boxCentre.add(new Vec3d(d2.getUnitVector())).distanceTo(playerCentre);
                 return Double.compare(dis1, dis2);
             }).orElseThrow().getOpposite();
+            if(opposite) effectiveDirection = effectiveDirection.getOpposite();
             gravityEffect = new GravityEffect(effectiveDirection, gravityEffect.volume(), gravityEffect.source());
             //Get player collider for gravity effects
             Box gravityEffectCollider = (gravityEffect.direction().getOpposite() == GravityChangerAPI.getGravityDirection(player)) ? player.getBoundingBox() : GravityEffect.getGravityEffectCollider(player);

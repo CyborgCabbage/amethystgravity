@@ -27,6 +27,8 @@ import java.util.Random;
 
 public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity implements NamedScreenHandlerFactory {
     protected PropertyDelegate propertyDelegate;
+    private static final String POLARITY_KEY = "Polarity";
+    protected int polarity = 0;//0 = attract, 1 = repel
 
     public AbstractFieldGeneratorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -40,7 +42,8 @@ public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity impl
         DEPTH_UP,
         DEPTH_DOWN,
         RADIUS_UP,
-        RADIUS_DOWN
+        RADIUS_DOWN,
+        POLARITY
     }
 
     public static void clientTick(World world, BlockPos blockPos, BlockState blockState, AbstractFieldGeneratorBlockEntity blockEntity) {
@@ -89,6 +92,22 @@ public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity impl
         double y = box.getYLength();
         double z = box.getZLength();
         return 2*x*y+2*x*z+2*y*z;
+    }
+
+    public int getPolarity(){
+        return polarity;
+    }
+
+    @Override
+    protected void writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        nbt.putInt(POLARITY_KEY, polarity);
+    }
+
+    @Override
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
+        polarity = nbt.getInt(POLARITY_KEY);
     }
 
     @Override

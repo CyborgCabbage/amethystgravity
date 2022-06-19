@@ -52,6 +52,9 @@ public class FieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity
                     case 2 -> {
                         return depth;
                     }
+                    case 3 -> {
+                        return polarity;
+                    }
                     default -> throw new IndexOutOfBoundsException(index);
                 }
             }
@@ -62,13 +65,14 @@ public class FieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity
                     case 0 -> height = value;
                     case 1 -> width = value;
                     case 2 -> depth = value;
+                    case 3 -> polarity = value;
                     default -> throw new IndexOutOfBoundsException(index);
                 }
             }
 
             @Override
             public int size() {
-                return 3;
+                return 4;
             }
         };
     }
@@ -77,7 +81,11 @@ public class FieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity
         Direction direction = blockState.get(FieldGeneratorBlock.FACING).getOpposite();
         //Applying gravity effect
         Box box = getGravityEffectBox();
-        GravityEffect.applyGravityEffectToPlayers(getGravityEffect(direction, blockPos), box, world);
+        if(getPolarity() == 0) {
+            GravityEffect.applyGravityEffectToPlayers(getGravityEffect(direction, blockPos), box, world);
+        }else{
+            GravityEffect.applyGravityEffectToPlayers(getGravityEffect(direction.getOpposite(), blockPos), box, world);
+        }
         //Particles
         //spawnParticles(getGravityEffectBox(), new Vec3d(direction.getUnitVector()));
     }

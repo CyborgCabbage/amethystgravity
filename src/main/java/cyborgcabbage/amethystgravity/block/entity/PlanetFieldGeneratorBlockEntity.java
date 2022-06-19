@@ -38,7 +38,9 @@ public class PlanetFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlock
             public int get(int index) {
                 if (index == 0) {
                     return radius;
-                } else {
+                } else if(index == 1){
+                    return polarity;
+                }else{
                     throw new IndexOutOfBoundsException(index);
                 }
             }
@@ -47,6 +49,8 @@ public class PlanetFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlock
             public void set(int index, int value) {
                 if (index == 0) {
                     radius = value;
+                } else if(index == 1){
+                    polarity = value;
                 } else {
                     throw new IndexOutOfBoundsException(index);
                 }
@@ -54,7 +58,7 @@ public class PlanetFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlock
 
             @Override
             public int size() {
-                return 1;
+                return 2;
             }
         };
     }
@@ -62,7 +66,7 @@ public class PlanetFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlock
     protected void clientTick(ClientWorld world, BlockPos blockPos, BlockState blockState){
         //Applying gravity effect
         Box box = getGravityEffectBox();
-        GravityEffect.applySixWayGravityEffectToPlayers(getGravityEffect(blockPos), box, world);
+        GravityEffect.applySixWayGravityEffectToPlayers(getGravityEffect(blockPos), box, world, getPolarity() == 1);
         //Particles
         //spawnParticles(box, new Vec3d(0, 0, 0));
     }

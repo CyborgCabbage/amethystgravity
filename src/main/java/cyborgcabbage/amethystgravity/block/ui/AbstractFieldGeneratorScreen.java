@@ -3,14 +3,19 @@ package cyborgcabbage.amethystgravity.block.ui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.block.entity.AbstractFieldGeneratorBlockEntity;
+import cyborgcabbage.amethystgravity.block.entity.FieldGeneratorBlockEntity;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.option.CyclingOption;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 
 import java.awt.*;
@@ -19,6 +24,7 @@ import java.text.DecimalFormat;
 public abstract class AbstractFieldGeneratorScreen<T extends AbstractFieldGeneratorScreenHandler> extends HandledScreen<T> {
     private static final Identifier TEXTURE = new Identifier(AmethystGravity.MOD_ID, "textures/gui/blank.png");
     protected final T sh;
+    ButtonWidget polarityButton;
 
     public AbstractFieldGeneratorScreen(T handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -43,6 +49,31 @@ public abstract class AbstractFieldGeneratorScreen<T extends AbstractFieldGenera
         renderValuesAndLabels(matrices);
         //Tooltip
         drawMouseoverTooltip(matrices, mouseX, mouseY);
+
+        if(polarityButton != null) polarityButton.setMessage(getPolarityText());
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        // Center the title
+        titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2;
+        int bWidth = 120;
+        int bHeight = 20;
+        int bX = (width - bWidth) / 2;
+        int bY = (height - bHeight) / 2 + 5;
+        //Polarity Button
+        polarityButton = addDrawableChild(new ButtonWidget(bX, bY + 40, bWidth, bHeight, getPolarityText(), button -> {
+            sendMenuUpdatePacket(FieldGeneratorBlockEntity.Button.POLARITY);
+        }));
+    }
+
+    private TranslatableText getPolarityText(){
+        if(sh.getPolarity() == 0){
+            return new TranslatableText("amethystgravity.fieldGenerator.attract");
+        }else{
+            return new TranslatableText("amethystgravity.fieldGenerator.repel");
+        }
     }
 
     protected abstract void renderValuesAndLabels(MatrixStack matrices);

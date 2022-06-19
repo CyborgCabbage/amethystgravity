@@ -31,7 +31,6 @@ public class FieldGeneratorBlockEntityRenderer extends AbstractFieldGeneratorBlo
         double height = entity.getHeight();
         double width = entity.getWidth();
         double depth = entity.getDepth();
-
         ArrayList<Vec3f> p = new ArrayList<>();
         p.add(new Vec3f(-.5f*(float)width+SMIDGE, 1*(float)height-SMIDGE, -.5f*(float)depth+SMIDGE));
         p.add(new Vec3f(-.5f*(float)width+SMIDGE, 1*(float)height-SMIDGE, .5f*(float)depth-SMIDGE));
@@ -52,26 +51,33 @@ public class FieldGeneratorBlockEntityRenderer extends AbstractFieldGeneratorBlo
         VertexConsumer buffer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(ARROW_TEXTURE));
         Matrix4f m = matrixStack.peek().getPositionMatrix();
         Matrix3f n = matrixStack.peek().getNormalMatrix();
+        float h0 = -animation;
+        float h1 = -animation;
+        if(entity.getPolarity() == 1) {
+            h0 += (float)height;
+        }else {
+            h1 += (float)height;
+        }
         //
-        addVertex(m, n, buffer, p.get(0), -.5f*(float)depth, 0*(float)height-animation);
-        addVertex(m, n, buffer, p.get(1), .5f*(float)depth, 0*(float)height-animation);
-        addVertex(m, n, buffer, p.get(5), .5f*(float)depth, 1*(float)height-animation);
-        addVertex(m, n, buffer, p.get(4), -.5f*(float)depth, 1*(float)height-animation);
+        addVertex(m, n, buffer, p.get(0), -.5f*(float)depth, h0);
+        addVertex(m, n, buffer, p.get(1), .5f*(float)depth, h0);
+        addVertex(m, n, buffer, p.get(5), .5f*(float)depth, h1);
+        addVertex(m, n, buffer, p.get(4), -.5f*(float)depth, h1);
         //
-        addVertex(m, n, buffer, p.get(1), -.5f*(float)width, 0*(float)height-animation);
-        addVertex(m, n, buffer, p.get(2), .5f*(float)width, 0*(float)height-animation);
-        addVertex(m, n, buffer, p.get(6), .5f*(float)width, 1*(float)height-animation);
-        addVertex(m, n, buffer, p.get(5), -.5f*(float)width, 1*(float)height-animation);
+        addVertex(m, n, buffer, p.get(1), -.5f*(float)width, h0);
+        addVertex(m, n, buffer, p.get(2), .5f*(float)width, h0);
+        addVertex(m, n, buffer, p.get(6), .5f*(float)width, h1);
+        addVertex(m, n, buffer, p.get(5), -.5f*(float)width, h1);
         //
-        addVertex(m, n, buffer, p.get(2), .5f*(float)depth, 0*(float)height-animation);
-        addVertex(m, n, buffer, p.get(3), -.5f*(float)depth, 0*(float)height-animation);
-        addVertex(m, n, buffer, p.get(7), -.5f*(float)depth, 1*(float)height-animation);
-        addVertex(m, n, buffer, p.get(6), .5f*(float)depth, 1*(float)height-animation);
+        addVertex(m, n, buffer, p.get(2), .5f*(float)depth, h0);
+        addVertex(m, n, buffer, p.get(3), -.5f*(float)depth, h0);
+        addVertex(m, n, buffer, p.get(7), -.5f*(float)depth, h1);
+        addVertex(m, n, buffer, p.get(6), .5f*(float)depth, h1);
         //
-        addVertex(m, n, buffer, p.get(3), .5f*(float)width, 0*(float)height-animation);
-        addVertex(m, n, buffer, p.get(0), -.5f*(float)width, 0*(float)height-animation);
-        addVertex(m, n, buffer, p.get(4), -.5f*(float)width, 1*(float)height-animation);
-        addVertex(m, n, buffer, p.get(7), .5f*(float)width, 1*(float)height-animation);
+        addVertex(m, n, buffer, p.get(3), .5f*(float)width, h0);
+        addVertex(m, n, buffer, p.get(0), -.5f*(float)width, h0);
+        addVertex(m, n, buffer, p.get(4), -.5f*(float)width, h1);
+        addVertex(m, n, buffer, p.get(7), .5f*(float)width, h1);
 
         VertexConsumer buffer2 = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(WALL_TEXTURE));
         renderFaceEdges(m, n, buffer2, p.get(0), p.get(1), p.get(2), p.get(3));
