@@ -79,7 +79,7 @@ public class FieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity
         Box box = getGravityEffectBox();
         GravityEffect.applyGravityEffectToPlayers(getGravityEffect(direction, blockPos), box, world);
         //Particles
-        spawnParticles(getGravityEffectBox(), new Vec3d(direction.getUnitVector()));
+        //spawnParticles(getGravityEffectBox(), new Vec3d(direction.getUnitVector()));
     }
 
     public Box getGravityEffectBox(){

@@ -64,7 +64,7 @@ public class PlanetFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlock
         Box box = getGravityEffectBox();
         GravityEffect.applySixWayGravityEffectToPlayers(getGravityEffect(blockPos), box, world);
         //Particles
-        spawnParticles(box, new Vec3d(0, 0, 0));
+        //spawnParticles(box, new Vec3d(0, 0, 0));
     }
 
     protected Box getGravityEffectBox(){
