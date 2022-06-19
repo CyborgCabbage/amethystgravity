@@ -1,5 +1,6 @@
 package cyborgcabbage.amethystgravity.block.ui;
 
+import cyborgcabbage.amethystgravity.block.entity.AbstractFieldGeneratorBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -28,4 +29,6 @@ public abstract class AbstractFieldGeneratorScreenHandler<T extends AbstractFiel
     }
 
     protected abstract Block getBlock();
+
+    public abstract void pressButton(AbstractFieldGeneratorBlockEntity.Button button, boolean shift);
 }

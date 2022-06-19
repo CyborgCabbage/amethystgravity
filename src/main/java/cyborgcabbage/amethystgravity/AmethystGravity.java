@@ -3,9 +3,11 @@ package cyborgcabbage.amethystgravity;
 import cyborgcabbage.amethystgravity.block.FieldGeneratorBlock;
 import cyborgcabbage.amethystgravity.block.PlanetFieldGeneratorBlock;
 import cyborgcabbage.amethystgravity.block.PlatingBlock;
+import cyborgcabbage.amethystgravity.block.entity.AbstractFieldGeneratorBlockEntity;
 import cyborgcabbage.amethystgravity.block.entity.FieldGeneratorBlockEntity;
 import cyborgcabbage.amethystgravity.block.entity.PlanetFieldGeneratorBlockEntity;
 import cyborgcabbage.amethystgravity.block.entity.PlatingBlockEntity;
+import cyborgcabbage.amethystgravity.block.ui.AbstractFieldGeneratorScreenHandler;
 import cyborgcabbage.amethystgravity.block.ui.FieldGeneratorScreenHandler;
 import cyborgcabbage.amethystgravity.block.ui.PlanetFieldGeneratorScreenHandler;
 import me.andrew.gravitychanger.api.GravitySource;
@@ -81,11 +83,8 @@ public class AmethystGravity implements ModInitializer {
 			int button = buf.readVarInt();
 			boolean shift = buf.readBoolean();
 			server.execute(() -> {
-				if(player.currentScreenHandler instanceof FieldGeneratorScreenHandler screenHandler){
-					FieldGeneratorBlockEntity.Button e = FieldGeneratorBlockEntity.Button.values()[button];
-					screenHandler.pressButton(e, shift);
-				}else if(player.currentScreenHandler instanceof PlanetFieldGeneratorScreenHandler screenHandler){
-					PlanetFieldGeneratorBlockEntity.Button e = PlanetFieldGeneratorBlockEntity.Button.values()[button];
+				if(player.currentScreenHandler instanceof AbstractFieldGeneratorScreenHandler screenHandler){
+					AbstractFieldGeneratorBlockEntity.Button e = AbstractFieldGeneratorBlockEntity.Button.values()[button];
 					screenHandler.pressButton(e, shift);
 				}
 			});
