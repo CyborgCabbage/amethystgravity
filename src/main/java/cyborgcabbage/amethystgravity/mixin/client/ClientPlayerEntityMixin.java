@@ -1,5 +1,6 @@
 package cyborgcabbage.amethystgravity.mixin.client;
 
+import com.mojang.authlib.GameProfile;
 import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.gravity.GravityData;
 import cyborgcabbage.amethystgravity.gravity.GravityEffect;
@@ -9,9 +10,12 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.*;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
@@ -23,10 +27,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Mixin(ClientPlayerEntity.class)
-public abstract class ClientPlayerEntityMixin implements GravityData {
+public abstract class ClientPlayerEntityMixin extends PlayerEntity implements GravityData {
+    @Shadow private boolean lastOnGround;
     public ArrayList<GravityEffect> gravityEffectList = new ArrayList<>();
     public ArrayList<GravityEffect> lowerGravityEffectList = new ArrayList<>();
     public GravityEffect gravityEffect = null;
+
+    public ClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
+        super(world, pos, yaw, profile);
+    }
 
     @Override
     public ArrayList<GravityEffect> getFieldList() {
@@ -96,8 +105,9 @@ public abstract class ClientPlayerEntityMixin implements GravityData {
             if(oldDirection != newDirection) {
                 Direction activeDirection = GravityChangerAPI.getGravityDirection(player);
                 Direction resultantDirection = GravityChangerAPI.getGravityDirectionAfterChange(player, AmethystGravity.FIELD_GRAVITY_SOURCE, newDirection);
-                boolean rotatePerspective = arePerpendicular(activeDirection, resultantDirection);//TODO: if velocity is large, it shouldn't rotate
-                GravityChangerAPI.setGravityDirectionAdvanced(player, AmethystGravity.FIELD_GRAVITY_SOURCE, newDirection, PacketByteBufs.create(), rotatePerspective, rotatePerspective);
+                boolean rotateCamera = arePerpendicular(activeDirection, resultantDirection) && !this.isFallFlying();
+                boolean rotateVelocity = rotateCamera && this.isOnGround();
+                GravityChangerAPI.setGravityDirectionAdvanced(player, AmethystGravity.FIELD_GRAVITY_SOURCE, newDirection, PacketByteBufs.create(), rotateVelocity, rotateCamera);
             }
             setFieldGravity(newGravity);
             //Clear direction pool
