@@ -28,7 +28,6 @@ import java.util.Optional;
 
 @Mixin(ClientPlayerEntity.class)
 public abstract class ClientPlayerEntityMixin extends PlayerEntity implements GravityData {
-    @Shadow private boolean lastOnGround;
     public ArrayList<GravityEffect> gravityEffectList = new ArrayList<>();
     public ArrayList<GravityEffect> lowerGravityEffectList = new ArrayList<>();
     public GravityEffect gravityEffect = null;
