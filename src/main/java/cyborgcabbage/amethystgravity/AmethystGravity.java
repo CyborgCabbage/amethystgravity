@@ -1,14 +1,13 @@
 package cyborgcabbage.amethystgravity;
 
 import cyborgcabbage.amethystgravity.armor.GravityGlassesArmorMaterial;
+import cyborgcabbage.amethystgravity.block.CylinderFieldGeneratorBlock;
 import cyborgcabbage.amethystgravity.block.FieldGeneratorBlock;
 import cyborgcabbage.amethystgravity.block.PlanetFieldGeneratorBlock;
 import cyborgcabbage.amethystgravity.block.PlatingBlock;
-import cyborgcabbage.amethystgravity.block.entity.AbstractFieldGeneratorBlockEntity;
-import cyborgcabbage.amethystgravity.block.entity.FieldGeneratorBlockEntity;
-import cyborgcabbage.amethystgravity.block.entity.PlanetFieldGeneratorBlockEntity;
-import cyborgcabbage.amethystgravity.block.entity.PlatingBlockEntity;
+import cyborgcabbage.amethystgravity.block.entity.*;
 import cyborgcabbage.amethystgravity.block.ui.AbstractFieldGeneratorScreenHandler;
+import cyborgcabbage.amethystgravity.block.ui.CylinderFieldGeneratorScreenHandler;
 import cyborgcabbage.amethystgravity.block.ui.FieldGeneratorScreenHandler;
 import cyborgcabbage.amethystgravity.block.ui.PlanetFieldGeneratorScreenHandler;
 import me.andrew.gravitychanger.api.GravitySource;
@@ -57,11 +56,16 @@ public class AmethystGravity implements ModInitializer {
 	public static final Block PLANET_FIELD_GENERATOR_BLOCK = new PlanetFieldGeneratorBlock(FabricBlockSettings.of(Material.STONE).strength(3.5f).requiresTool());
 	public static BlockEntityType<PlanetFieldGeneratorBlockEntity> PLANET_FIELD_GENERATOR_BLOCK_ENTITY;
 
+	public static final Block CYLINDER_FIELD_GENERATOR_BLOCK = new CylinderFieldGeneratorBlock(FabricBlockSettings.of(Material.STONE).strength(3.5f).requiresTool());
+	public static BlockEntityType<CylinderFieldGeneratorBlockEntity> CYLINDER_FIELD_GENERATOR_BLOCK_ENTITY;
+
 	public static final DefaultParticleType GRAVITY_INDICATOR = FabricParticleTypes.simple();
 
 	public static final ScreenHandlerType<FieldGeneratorScreenHandler> FIELD_GENERATOR_SCREEN_HANDLER = new ScreenHandlerType<>(FieldGeneratorScreenHandler::new);
 
 	public static final ScreenHandlerType<PlanetFieldGeneratorScreenHandler> PLANET_FIELD_GENERATOR_SCREEN_HANDLER = new ScreenHandlerType<>(PlanetFieldGeneratorScreenHandler::new);
+
+	public static final ScreenHandlerType<CylinderFieldGeneratorScreenHandler> CYLINDER_FIELD_GENERATOR_SCREEN_HANDLER = new ScreenHandlerType<>(CylinderFieldGeneratorScreenHandler::new);
 
 	public static final GravityGlassesArmorMaterial ggam = new GravityGlassesArmorMaterial();
 
@@ -78,10 +82,14 @@ public class AmethystGravity implements ModInitializer {
 		registerBlockAndItem("planet_field_generator", PLANET_FIELD_GENERATOR_BLOCK);
 		PLANET_FIELD_GENERATOR_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "planet_field_generator_block_entity"), FabricBlockEntityTypeBuilder.create(PlanetFieldGeneratorBlockEntity::new, PLANET_FIELD_GENERATOR_BLOCK).build());
 
+		registerBlockAndItem("cylinder_field_generator", CYLINDER_FIELD_GENERATOR_BLOCK);
+		CYLINDER_FIELD_GENERATOR_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "cylinder_field_generator_block_entity"), FabricBlockEntityTypeBuilder.create(CylinderFieldGeneratorBlockEntity::new, CYLINDER_FIELD_GENERATOR_BLOCK).build());
+
 		Registry.register(Registry.PARTICLE_TYPE, new Identifier(MOD_ID, "gravity_indicator"), GRAVITY_INDICATOR);
 
 		Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "field_generator"), FIELD_GENERATOR_SCREEN_HANDLER);
 		Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "planet_field_generator"), PLANET_FIELD_GENERATOR_SCREEN_HANDLER);
+		Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "cylinder_field_generator"), CYLINDER_FIELD_GENERATOR_SCREEN_HANDLER);
 
 		ServerPlayNetworking.registerGlobalReceiver(FIELD_GENERATOR_MENU_CHANNEL, (server, player, handler, buf, sender) -> {
 			int button = buf.readVarInt();

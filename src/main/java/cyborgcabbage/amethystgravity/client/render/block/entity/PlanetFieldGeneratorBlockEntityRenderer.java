@@ -46,13 +46,6 @@ public class PlanetFieldGeneratorBlockEntityRenderer extends AbstractFieldGenera
         outer.add(new Vec3f(-r,-r, r));
         outer.add(new Vec3f(-r,-r,-r));
 
-        ArrayList<Vec3f> faceCentres = new ArrayList<>();
-        for (Direction d : Direction.values()) {
-            Vec3f vec = d.getUnitVector();
-            vec.multiplyComponentwise(r,r,r);
-            faceCentres.add(vec);
-        }
-
         ArrayList<IntPair> edges = new ArrayList<>();
         edges.add(new IntPair(0, 1));
         edges.add(new IntPair(3, 2));
