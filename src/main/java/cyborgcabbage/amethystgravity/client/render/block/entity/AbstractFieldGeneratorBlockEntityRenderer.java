@@ -2,10 +2,15 @@ package cyborgcabbage.amethystgravity.client.render.block.entity;
 
 import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.block.entity.AbstractFieldGeneratorBlockEntity;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
@@ -21,17 +26,23 @@ public abstract class AbstractFieldGeneratorBlockEntityRenderer<BE extends Abstr
 
     @Override
     public void render(BE entity, float tickDelta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
-        double time = tickDelta;
-        if(entity.getWorld() != null) {
-            time += entity.getWorld().getTime();
-            time /= 20;
+        Entity ce = MinecraftClient.getInstance().getCameraEntity();
+        if(ce instanceof LivingEntity le) {
+            ItemStack equippedStack = le.getEquippedStack(EquipmentSlot.HEAD);
+            if(equippedStack.getItem() == AmethystGravity.GRAVITY_GLASSES) {
+                double time = tickDelta;
+                if (entity.getWorld() != null) {
+                    time += entity.getWorld().getTime();
+                    time /= 20;
+                }
+                //Animation
+                float animation = (float) (time % 1);
+                matrixStack.push();
+                matrixStack.translate(0.5, 0.5, 0.5);
+                renderForceField(entity, matrixStack, vertexConsumerProvider, animation);
+                matrixStack.pop();
+            }
         }
-        //Animation
-        float animation = (float)(time % 1);
-        matrixStack.push();
-        matrixStack.translate(0.5, 0.5, 0.5);
-        renderForceField(entity, matrixStack, vertexConsumerProvider, animation);
-        matrixStack.pop();
     }
 
     protected abstract void renderForceField(BE entity, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, float animation);

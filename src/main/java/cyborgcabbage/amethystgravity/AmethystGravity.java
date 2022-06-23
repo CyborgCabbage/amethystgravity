@@ -1,5 +1,6 @@
 package cyborgcabbage.amethystgravity;
 
+import cyborgcabbage.amethystgravity.armor.GravityGlassesArmorMaterial;
 import cyborgcabbage.amethystgravity.block.FieldGeneratorBlock;
 import cyborgcabbage.amethystgravity.block.PlanetFieldGeneratorBlock;
 import cyborgcabbage.amethystgravity.block.PlatingBlock;
@@ -22,9 +23,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.item.*;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
@@ -63,6 +63,10 @@ public class AmethystGravity implements ModInitializer {
 
 	public static final ScreenHandlerType<PlanetFieldGeneratorScreenHandler> PLANET_FIELD_GENERATOR_SCREEN_HANDLER = new ScreenHandlerType<>(PlanetFieldGeneratorScreenHandler::new);
 
+	public static final GravityGlassesArmorMaterial ggam = new GravityGlassesArmorMaterial();
+
+	public static final Item GRAVITY_GLASSES = new ArmorItem(ggam, EquipmentSlot.HEAD, new Item.Settings().group(GRAVITY_ITEM_GROUP));
+
 	@Override
 	public void onInitialize() {
 		registerBlockAndItem("plating", PLATING_BLOCK);
@@ -91,6 +95,8 @@ public class AmethystGravity implements ModInitializer {
 		});
 
 		GravitySource.registerClientDriven(FIELD_GRAVITY_SOURCE, 2, (server, player, handler, buf, packetSender) -> true);
+
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_glasses"), GRAVITY_GLASSES);
 	}
 
 	private void registerBlockAndItem(String id, Block block){
