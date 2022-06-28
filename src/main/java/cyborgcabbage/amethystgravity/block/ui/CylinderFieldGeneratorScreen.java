@@ -5,7 +5,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public class CylinderFieldGeneratorScreen extends AbstractFieldGeneratorScreen<CylinderFieldGeneratorScreenHandler>{
     public CylinderFieldGeneratorScreen(CylinderFieldGeneratorScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -22,11 +21,11 @@ public class CylinderFieldGeneratorScreen extends AbstractFieldGeneratorScreen<C
         int bX = (width - bWidth) / 2;
         int bY = (height - bHeight) / 2 + 5;
         //Height
-        addDrawableChild(new ButtonWidget(bX-25, bY - 40, bWidth, bHeight, new TranslatableText("amethystgravity.fieldGenerator.increase"), button -> sendMenuUpdatePacket(FieldGeneratorBlockEntity.Button.RADIUS_UP)));
-        addDrawableChild(new ButtonWidget(bX-25, bY, bWidth, bHeight, new TranslatableText("amethystgravity.fieldGenerator.decrease"), button -> sendMenuUpdatePacket(FieldGeneratorBlockEntity.Button.RADIUS_DOWN)));
+        addDrawableChild(new ButtonWidget(bX-25, bY - 40, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.increase"), button -> sendMenuUpdatePacket(FieldGeneratorBlockEntity.Button.RADIUS_UP)));
+        addDrawableChild(new ButtonWidget(bX-25, bY, bWidth, bHeight,Text.translatable("amethystgravity.fieldGenerator.decrease"), button -> sendMenuUpdatePacket(FieldGeneratorBlockEntity.Button.RADIUS_DOWN)));
         //Width
-        addDrawableChild(new ButtonWidget(bX+25, bY - 40, bWidth, bHeight, new TranslatableText("amethystgravity.fieldGenerator.increase"), button -> sendMenuUpdatePacket(FieldGeneratorBlockEntity.Button.WIDTH_UP)));
-        addDrawableChild(new ButtonWidget(bX+25, bY, bWidth, bHeight, new TranslatableText("amethystgravity.fieldGenerator.decrease"), button -> sendMenuUpdatePacket(FieldGeneratorBlockEntity.Button.WIDTH_DOWN)));
+        addDrawableChild(new ButtonWidget(bX+25, bY - 40, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.increase"), button -> sendMenuUpdatePacket(FieldGeneratorBlockEntity.Button.WIDTH_UP)));
+        addDrawableChild(new ButtonWidget(bX+25, bY, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.decrease"), button -> sendMenuUpdatePacket(FieldGeneratorBlockEntity.Button.WIDTH_DOWN)));
     }
 
     @Override

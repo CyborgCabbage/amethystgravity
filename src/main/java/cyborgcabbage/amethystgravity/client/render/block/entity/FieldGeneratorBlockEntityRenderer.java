@@ -1,21 +1,19 @@
 package cyborgcabbage.amethystgravity.client.render.block.entity;
 
-import cyborgcabbage.amethystgravity.AmethystGravity;
-import cyborgcabbage.amethystgravity.block.FieldGeneratorBlock;
+import com.fusionflux.gravity_api.util.RotationUtil;
 import cyborgcabbage.amethystgravity.block.entity.FieldGeneratorBlockEntity;
-import me.andrew.gravitychanger.util.RotationUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.*;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.*;
-import org.checkerframework.checker.units.qual.A;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Matrix3f;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 @Environment(value= EnvType.CLIENT)

@@ -1,21 +1,25 @@
 package cyborgcabbage.amethystgravity.mixin.client;
 
+import com.fusionflux.gravity_api.api.Gravity;
+import com.fusionflux.gravity_api.api.GravityChangerAPI;
+import com.fusionflux.gravity_api.api.RotationParameters;
+import com.fusionflux.gravity_api.util.RotationUtil;
 import com.mojang.authlib.GameProfile;
 import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.gravity.GravityData;
 import cyborgcabbage.amethystgravity.gravity.GravityEffect;
-import me.andrew.gravitychanger.api.GravityChangerAPI;
-import me.andrew.gravitychanger.util.RotationUtil;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.*;
+import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
@@ -32,8 +36,8 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Gr
     public ArrayList<GravityEffect> lowerGravityEffectList = new ArrayList<>();
     public GravityEffect gravityEffect = null;
 
-    public ClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
-        super(world, pos, yaw, profile);
+    public ClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile, @org.jetbrains.annotations.Nullable PlayerPublicKey publicKey) {
+        super(world, pos, yaw, gameProfile, publicKey);
     }
 
     @Override
@@ -99,14 +103,26 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Gr
                 }
             }
             //Set gravity
-            Direction oldDirection = GravityChangerAPI.getGravityDirection(player, AmethystGravity.FIELD_GRAVITY_SOURCE);
-            Direction newDirection = (newGravity == null) ? null : newGravity.direction();
+            /*Direction oldDirection = GravityChangerAPI.getGravityDirection(player, AmethystGravity.FIELD_GRAVITY_SOURCE);
             if(oldDirection != newDirection) {
                 Direction activeDirection = GravityChangerAPI.getGravityDirection(player);
                 Direction resultantDirection = GravityChangerAPI.getGravityDirectionAfterChange(player, AmethystGravity.FIELD_GRAVITY_SOURCE, newDirection);
                 boolean rotateCamera = arePerpendicular(activeDirection, resultantDirection) && !this.isFallFlying();
                 boolean rotateVelocity = rotateCamera && this.isOnGround();
                 GravityChangerAPI.setGravityDirectionAdvanced(player, AmethystGravity.FIELD_GRAVITY_SOURCE, newDirection, PacketByteBufs.create(), rotateVelocity, rotateCamera);
+            }*/
+            /*PacketByteBuf buf = PacketByteBufs.create();
+            if(newGravity != null) {
+                GravityChangerAPI.addGravityClient(player, new Gravity(newGravity.direction(), 100, Integer.MAX_VALUE, AmethystGravity.FIELD_GRAVITY_SOURCE, new RotationParameters().alternateCenter(true)));
+            }else{
+                ArrayList<Gravity> gravityList = GravityChangerAPI.getGravityList(player);
+                gravityList.removeIf(g -> g.getSource().equals(AmethystGravity.FIELD_GRAVITY_SOURCE));
+            }*/
+            Direction oldDirection = currentGravity == null ? null : currentGravity.direction();
+            Direction newDirection = newGravity == null ? null : newGravity.direction();
+            if(oldDirection != newDirection) {
+                RotationParameters rotationParameters = new RotationParameters().alternateCenter(true).rotateView(!this.isFallFlying()).rotateVelocity(this.isOnGround());
+                GravityChangerAPI.addGravityClient(player, new Gravity(newDirection, 100, Integer.MAX_VALUE, AmethystGravity.FIELD_GRAVITY_SOURCE, rotationParameters));
             }
             setFieldGravity(newGravity);
             //Clear direction pool

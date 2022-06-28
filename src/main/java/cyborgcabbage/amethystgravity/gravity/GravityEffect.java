@@ -1,7 +1,7 @@
 package cyborgcabbage.amethystgravity.gravity;
 
-import me.andrew.gravitychanger.api.GravityChangerAPI;
-import me.andrew.gravitychanger.util.RotationUtil;
+import com.fusionflux.gravity_api.api.GravityChangerAPI;
+import com.fusionflux.gravity_api.util.RotationUtil;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -12,23 +12,22 @@ import net.minecraft.world.World;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 public record GravityEffect(Direction direction, double volume, BlockPos source) {
 
     public static Box getGravityEffectCollider(PlayerEntity player){
         var d = player.getDimensions(player.getPose());
         double hw = d.width / 2.0;
-        Vec3d pos1 = RotationUtil.vecPlayerToWorld(hw, 0.6, hw, GravityChangerAPI.getAppliedGravityDirection(player));
-        Vec3d pos2 = RotationUtil.vecPlayerToWorld(-hw, 0.0, -hw, GravityChangerAPI.getAppliedGravityDirection(player));
+        Vec3d pos1 = RotationUtil.vecPlayerToWorld(hw, 0.6, hw, GravityChangerAPI.getGravityDirection(player));
+        Vec3d pos2 = RotationUtil.vecPlayerToWorld(-hw, 0.0, -hw, GravityChangerAPI.getGravityDirection(player));
         return new Box(pos1, pos2).offset(player.getPos());
     }
 
     public static Box getLowerGravityEffectCollider(PlayerEntity player){
         var d = player.getDimensions(player.getPose());
         double hw = d.width / 2.0;
-        Vec3d pos1 = RotationUtil.vecPlayerToWorld(hw, -0.1, hw, GravityChangerAPI.getAppliedGravityDirection(player));
-        Vec3d pos2 = RotationUtil.vecPlayerToWorld(-hw, 0.0, -hw, GravityChangerAPI.getAppliedGravityDirection(player));
+        Vec3d pos1 = RotationUtil.vecPlayerToWorld(hw, -0.1, hw, GravityChangerAPI.getGravityDirection(player));
+        Vec3d pos2 = RotationUtil.vecPlayerToWorld(-hw, 0.0, -hw, GravityChangerAPI.getGravityDirection(player));
         return new Box(pos1, pos2).offset(player.getPos());
     }
 
@@ -92,7 +91,6 @@ public record GravityEffect(Direction direction, double volume, BlockPos source)
 
     public static Vec3d getGravityOrigin(PlayerEntity player){
         var dim = player.getDimensions(player.getPose());
-        return player.getPos().add(RotationUtil.vecPlayerToWorld(0.0, dim.width / 2.0, 0.0, GravityChangerAPI.getAppliedGravityDirection(player)));
+        return player.getPos().add(RotationUtil.vecPlayerToWorld(0.0, dim.width / 2.0, 0.0, GravityChangerAPI.getGravityDirection(player)));
     }
-
 }

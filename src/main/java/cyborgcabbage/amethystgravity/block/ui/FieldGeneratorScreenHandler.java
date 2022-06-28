@@ -3,7 +3,9 @@ package cyborgcabbage.amethystgravity.block.ui;
 import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.block.entity.AbstractFieldGeneratorBlockEntity;
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.*;
 import net.minecraft.server.world.ServerWorld;
 

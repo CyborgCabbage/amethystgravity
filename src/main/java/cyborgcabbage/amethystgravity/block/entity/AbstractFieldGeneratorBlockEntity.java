@@ -1,29 +1,21 @@
 package cyborgcabbage.amethystgravity.block.entity;
 
 import cyborgcabbage.amethystgravity.AmethystGravity;
-import cyborgcabbage.amethystgravity.block.ui.FieldGeneratorScreenHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Random;
 
 public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity implements NamedScreenHandlerFactory {
     protected PropertyDelegate propertyDelegate;
@@ -112,7 +104,7 @@ public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity impl
 
     @Override
     public Text getDisplayName() {
-        return new TranslatableText(getCachedState().getBlock().getTranslationKey());
+        return Text.translatable(getCachedState().getBlock().getTranslationKey());
     }
 
     public BlockEntityUpdateS2CPacket toUpdatePacket() {

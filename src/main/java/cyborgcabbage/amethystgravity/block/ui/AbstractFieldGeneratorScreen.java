@@ -8,14 +8,11 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.option.CyclingOption;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 
 import java.awt.*;
@@ -68,11 +65,11 @@ public abstract class AbstractFieldGeneratorScreen<T extends AbstractFieldGenera
         }));
     }
 
-    private TranslatableText getPolarityText(){
+    private Text getPolarityText(){
         if(sh.getPolarity() == 0){
-            return new TranslatableText("amethystgravity.fieldGenerator.attract");
+            return Text.translatable("amethystgravity.fieldGenerator.attract");
         }else{
-            return new TranslatableText("amethystgravity.fieldGenerator.repel");
+            return Text.translatable("amethystgravity.fieldGenerator.repel");
         }
     }
 

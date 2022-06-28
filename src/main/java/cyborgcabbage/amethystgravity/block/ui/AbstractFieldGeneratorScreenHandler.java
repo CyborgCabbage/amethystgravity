@@ -4,6 +4,7 @@ import cyborgcabbage.amethystgravity.block.entity.AbstractFieldGeneratorBlockEnt
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.*;
 
 public abstract class AbstractFieldGeneratorScreenHandler<T extends AbstractFieldGeneratorScreenHandler> extends ScreenHandler {
@@ -33,4 +34,9 @@ public abstract class AbstractFieldGeneratorScreenHandler<T extends AbstractFiel
     public abstract void pressButton(AbstractFieldGeneratorBlockEntity.Button button, boolean shift);
 
     public abstract int getPolarity();
+
+    @Override
+    public ItemStack transferSlot(PlayerEntity player, int index) {
+        return null;
+    }
 }
