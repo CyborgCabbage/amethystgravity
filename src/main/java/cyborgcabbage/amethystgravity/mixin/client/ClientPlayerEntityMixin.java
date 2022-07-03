@@ -1,17 +1,19 @@
 package cyborgcabbage.amethystgravity.mixin.client;
 
-import com.fusionflux.gravity_api.api.Gravity;
 import com.fusionflux.gravity_api.api.GravityChangerAPI;
 import com.fusionflux.gravity_api.api.RotationParameters;
 import com.fusionflux.gravity_api.util.RotationUtil;
 import com.mojang.authlib.GameProfile;
 import cyborgcabbage.amethystgravity.AmethystGravity;
+import cyborgcabbage.amethystgravity.gravity.FieldGravityVerifier;
 import cyborgcabbage.amethystgravity.gravity.GravityData;
 import cyborgcabbage.amethystgravity.gravity.GravityEffect;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -25,16 +27,14 @@ import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Mixin(ClientPlayerEntity.class)
 public abstract class ClientPlayerEntityMixin extends PlayerEntity implements GravityData {
     public ArrayList<GravityEffect> gravityEffectList = new ArrayList<>();
     public ArrayList<GravityEffect> lowerGravityEffectList = new ArrayList<>();
     public GravityEffect gravityEffect = null;
+    public int counter = 0;
 
     public ClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile, @org.jetbrains.annotations.Nullable PlayerPublicKey publicKey) {
         super(world, pos, yaw, gameProfile, publicKey);
@@ -70,6 +70,8 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Gr
             final GravityEffect currentGravity = getFieldGravity();
             GravityEffect newGravity = null;
             List<GravityEffect> directions = getFieldList();
+            counter++;
+            if(counter >= 5) counter = 0;
             //If the player is flying or in spectator
             if (!player.isSpectator() && !player.getAbilities().flying) {
                 //Find the elements of directions which have the lowest volume
@@ -120,9 +122,10 @@ public abstract class ClientPlayerEntityMixin extends PlayerEntity implements Gr
             }*/
             Direction oldDirection = currentGravity == null ? null : currentGravity.direction();
             Direction newDirection = newGravity == null ? null : newGravity.direction();
-            if(oldDirection != newDirection) {
+            if(oldDirection != newDirection || counter == 0) {
+                PacketByteBuf info = newGravity == null ? PacketByteBufs.create() : FieldGravityVerifier.packInfo(newGravity.source());
                 RotationParameters rotationParameters = new RotationParameters().alternateCenter(true).rotateView(!this.isFallFlying()).rotateVelocity(this.isOnGround());
-                GravityChangerAPI.addGravityClient(player, new Gravity(newDirection, 100, Integer.MAX_VALUE, AmethystGravity.FIELD_GRAVITY_SOURCE, rotationParameters));
+                GravityChangerAPI.addGravityClient(player, FieldGravityVerifier.newFieldGravity(newDirection, rotationParameters), FieldGravityVerifier.FIELD_GRAVITY_SOURCE, info);
             }
             setFieldGravity(newGravity);
             //Clear direction pool

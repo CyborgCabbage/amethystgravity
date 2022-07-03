@@ -19,6 +19,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class FieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity {
     private static final String HEIGHT_KEY = "Height";
     private static final String WIDTH_KEY = "Width";
@@ -71,11 +73,7 @@ public class FieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity
         Direction direction = blockState.get(FieldGeneratorBlock.FACING).getOpposite();
         //Applying gravity effect
         Box box = getGravityEffectBox();
-        if(getPolarity() == 0) {
-            GravityEffect.applyGravityEffectToPlayers(getGravityEffect(direction, blockPos), box, world);
-        }else{
-            GravityEffect.applyGravityEffectToPlayers(getGravityEffect(direction.getOpposite(), blockPos), box, world);
-        }
+        GravityEffect.applyGravityEffectToPlayers(getGravityEffect(direction, blockPos), box, world, getPolarity() != 0, List.of(direction), false);
         //Particles
         //spawnParticles(getGravityEffectBox(), new Vec3d(direction.getUnitVector()));
     }

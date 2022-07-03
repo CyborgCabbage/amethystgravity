@@ -13,8 +13,12 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class PlanetFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity {
     private static final String RADIUS_KEY = "Radius";
@@ -55,12 +59,12 @@ public class PlanetFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlock
     protected void clientTick(ClientWorld world, BlockPos blockPos, BlockState blockState){
         //Applying gravity effect
         Box box = getGravityEffectBox();
-        GravityEffect.applySixWayGravityEffectToPlayers(getGravityEffect(blockPos), box, world, getPolarity() == 1);
+        GravityEffect.applyGravityEffectToPlayers(getGravityEffect(blockPos), box, world, getPolarity() != 0, Arrays.asList(Direction.values()), false);
         //Particles
         //spawnParticles(box, new Vec3d(0, 0, 0));
     }
 
-    protected Box getGravityEffectBox(){
+    public Box getGravityEffectBox(){
         BlockPos blockPos = getPos();
         Vec3d pos1 = new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         Vec3d pos2 = pos1.add(1, 1, 1);

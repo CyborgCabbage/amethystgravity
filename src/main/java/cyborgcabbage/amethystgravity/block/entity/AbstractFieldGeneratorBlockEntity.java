@@ -44,7 +44,7 @@ public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity impl
 
     protected abstract void clientTick(ClientWorld world, BlockPos blockPos, BlockState blockState);
 
-    protected abstract Box getGravityEffectBox();
+    public abstract Box getGravityEffectBox();
 
     public double getVolume(){
         return getVolume(getGravityEffectBox());

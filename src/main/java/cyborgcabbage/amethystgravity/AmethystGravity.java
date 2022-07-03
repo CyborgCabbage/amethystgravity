@@ -1,5 +1,6 @@
 package cyborgcabbage.amethystgravity;
 
+import com.fusionflux.gravity_api.util.GravityChannel;
 import cyborgcabbage.amethystgravity.armor.GravityGlassesArmorMaterial;
 import cyborgcabbage.amethystgravity.block.CylinderFieldGeneratorBlock;
 import cyborgcabbage.amethystgravity.block.FieldGeneratorBlock;
@@ -10,6 +11,7 @@ import cyborgcabbage.amethystgravity.block.ui.AbstractFieldGeneratorScreenHandle
 import cyborgcabbage.amethystgravity.block.ui.CylinderFieldGeneratorScreenHandler;
 import cyborgcabbage.amethystgravity.block.ui.FieldGeneratorScreenHandler;
 import cyborgcabbage.amethystgravity.block.ui.PlanetFieldGeneratorScreenHandler;
+import cyborgcabbage.amethystgravity.gravity.FieldGravityVerifier;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -26,7 +28,6 @@ import net.minecraft.item.*;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,8 +35,6 @@ import org.apache.logging.log4j.Logger;
 public class AmethystGravity implements ModInitializer {
 	public static final String MOD_ID = "amethystgravity";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
-
-	public static String FIELD_GRAVITY_SOURCE = new Identifier(MOD_ID, "field").toString();
 
 	/*CLIENT -> SERVER
 	* FieldGeneratorBlockEntity.Button button
@@ -105,6 +104,8 @@ public class AmethystGravity implements ModInitializer {
 		});
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_glasses"), GRAVITY_GLASSES);
+
+		GravityChannel.UPDATE_GRAVITY.getVerifierRegistry().register(FieldGravityVerifier.FIELD_GRAVITY_SOURCE, FieldGravityVerifier::check);
 	}
 
 	private void registerBlockAndItem(String id, Block block){

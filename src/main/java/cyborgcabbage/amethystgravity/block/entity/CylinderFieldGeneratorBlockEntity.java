@@ -19,6 +19,11 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 public class CylinderFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity{
     private static final String RADIUS_KEY = "Radius";
     private static final String WIDTH_KEY = "Width";
@@ -68,7 +73,8 @@ public class CylinderFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlo
         Direction direction = fromAxis(a);
         //Applying gravity effect
         Box box = getGravityEffectBox();
-        GravityEffect.applyFourWayGravityEffectToPlayers(getGravityEffect(direction, blockPos), box, world, getPolarity() != 0, a);
+        List<Direction> dList = Arrays.stream(Direction.values()).filter(d -> d.getAxis() != a).toList();
+        GravityEffect.applyGravityEffectToPlayers(getGravityEffect(direction, blockPos), box, world, getPolarity() != 0, dList, false);
     }
 
     private GravityEffect getGravityEffect(Direction direction, BlockPos blockPos){
@@ -84,7 +90,7 @@ public class CylinderFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlo
     }
 
     @Override
-    protected Box getGravityEffectBox() {
+    public Box getGravityEffectBox() {
         Direction direction = fromAxis(getCachedState().get(CylinderFieldGeneratorBlock.AXIS));
         double w = (width/10.0)/2.0;
         double r = (radius/10.0)+0.5f;

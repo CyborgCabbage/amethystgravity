@@ -10,6 +10,9 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class PlatingBlockEntity extends BlockEntity{
     public PlatingBlockEntity(BlockPos pos, BlockState state) {
         super(AmethystGravity.PLATING_BLOCK_ENTITY, pos, state);
@@ -18,7 +21,7 @@ public class PlatingBlockEntity extends BlockEntity{
     public static void clientTick(World world, BlockPos blockPos, BlockState blockState, PlatingBlockEntity blockEntity) {
         for(Direction plateDirection : PlatingBlock.getDirections(blockState)){
             Box box = PlatingBlock.getGravityEffectBox(blockPos, plateDirection);
-            GravityEffect.applyGravityEffectToPlayers(PlatingBlock.getGravityEffect(plateDirection, blockPos), box, world);
+            GravityEffect.applyGravityEffectToPlayers(PlatingBlock.getGravityEffect(plateDirection, blockPos), box, world, false, List.of(plateDirection), true);
         }
     }
 }
