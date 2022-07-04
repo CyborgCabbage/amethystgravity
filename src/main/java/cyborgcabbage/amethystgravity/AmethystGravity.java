@@ -41,9 +41,7 @@ public class AmethystGravity implements ModInitializer {
     * boolean shift
 	* */
 	public static Identifier FIELD_GENERATOR_MENU_CHANNEL = new Identifier(MOD_ID, "field_generator_menu");
-	/*CLIENT -> SERVER
-	 * @Nullable Direction direction
-	 * */
+
 	public static final ItemGroup GRAVITY_ITEM_GROUP = FabricItemGroupBuilder.build(
 			new Identifier(MOD_ID, "general"),
 			() -> new ItemStack(Blocks.COBBLESTONE));
@@ -60,7 +58,7 @@ public class AmethystGravity implements ModInitializer {
 	public static final Block CYLINDER_FIELD_GENERATOR_BLOCK = new CylinderFieldGeneratorBlock(FabricBlockSettings.of(Material.STONE).strength(3.5f).requiresTool());
 	public static BlockEntityType<CylinderFieldGeneratorBlockEntity> CYLINDER_FIELD_GENERATOR_BLOCK_ENTITY;
 
-	public static final DefaultParticleType GRAVITY_INDICATOR = FabricParticleTypes.simple();
+	//public static final DefaultParticleType GRAVITY_INDICATOR = FabricParticleTypes.simple();
 
 	public static final ScreenHandlerType<FieldGeneratorScreenHandler> FIELD_GENERATOR_SCREEN_HANDLER = new ScreenHandlerType<>(FieldGeneratorScreenHandler::new);
 
@@ -86,7 +84,7 @@ public class AmethystGravity implements ModInitializer {
 		registerBlockAndItem("cylinder_field_generator", CYLINDER_FIELD_GENERATOR_BLOCK);
 		CYLINDER_FIELD_GENERATOR_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "cylinder_field_generator_block_entity"), FabricBlockEntityTypeBuilder.create(CylinderFieldGeneratorBlockEntity::new, CYLINDER_FIELD_GENERATOR_BLOCK).build());
 
-		Registry.register(Registry.PARTICLE_TYPE, new Identifier(MOD_ID, "gravity_indicator"), GRAVITY_INDICATOR);
+		//Registry.register(Registry.PARTICLE_TYPE, new Identifier(MOD_ID, "gravity_indicator"), GRAVITY_INDICATOR);
 
 		Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "field_generator"), FIELD_GENERATOR_SCREEN_HANDLER);
 		Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "planet_field_generator"), PLANET_FIELD_GENERATOR_SCREEN_HANDLER);

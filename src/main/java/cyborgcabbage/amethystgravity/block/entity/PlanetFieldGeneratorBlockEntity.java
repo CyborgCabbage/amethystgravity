@@ -15,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -56,7 +57,7 @@ public class PlanetFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlock
         };
     }
 
-    protected void clientTick(ClientWorld world, BlockPos blockPos, BlockState blockState){
+    protected void clientTick(World world, BlockPos blockPos, BlockState blockState){
         //Applying gravity effect
         Box box = getGravityEffectBox();
         GravityEffect.applyGravityEffectToPlayers(getGravityEffect(blockPos), box, world, getPolarity() != 0, Arrays.asList(Direction.values()), false);

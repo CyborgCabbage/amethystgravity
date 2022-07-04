@@ -34,7 +34,7 @@ public class AmethystGravityClient implements ClientModInitializer {
          * First argument is our particle's instance, created previously on ExampleMod.
          * Second argument is the particle's factory. The factory controls how the particle behaves.
          * In this example, we'll use FlameParticle's Factory.*/
-        ParticleFactoryRegistry.getInstance().register(AmethystGravity.GRAVITY_INDICATOR, FlameParticle.Factory::new);
+        //ParticleFactoryRegistry.getInstance().register(AmethystGravity.GRAVITY_INDICATOR, FlameParticle.Factory::new);
         HandledScreens.register(AmethystGravity.FIELD_GENERATOR_SCREEN_HANDLER, FieldGeneratorScreen::new);
         HandledScreens.register(AmethystGravity.PLANET_FIELD_GENERATOR_SCREEN_HANDLER, PlanetFieldGeneratorScreen::new);
         HandledScreens.register(AmethystGravity.CYLINDER_FIELD_GENERATOR_SCREEN_HANDLER, CylinderFieldGeneratorScreen::new);

@@ -17,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -67,8 +68,7 @@ public class CylinderFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlo
     }
 
 
-    @Override
-    protected void clientTick(ClientWorld world, BlockPos blockPos, BlockState blockState) {
+    protected void clientTick(World world, BlockPos blockPos, BlockState blockState) {
         Direction.Axis a = blockState.get(CylinderFieldGeneratorBlock.AXIS);
         Direction direction = fromAxis(a);
         //Applying gravity effect

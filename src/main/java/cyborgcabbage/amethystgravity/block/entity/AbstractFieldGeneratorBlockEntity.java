@@ -39,10 +39,10 @@ public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity impl
     }
 
     public static void clientTick(World world, BlockPos blockPos, BlockState blockState, AbstractFieldGeneratorBlockEntity blockEntity) {
-        blockEntity.clientTick((ClientWorld)world, blockPos, blockState);
+        blockEntity.clientTick(world, blockPos, blockState);
     }
 
-    protected abstract void clientTick(ClientWorld world, BlockPos blockPos, BlockState blockState);
+    protected abstract void clientTick(World world, BlockPos blockPos, BlockState blockState);
 
     public abstract Box getGravityEffectBox();
 
@@ -54,7 +54,7 @@ public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity impl
         return getSurfaceArea(getGravityEffectBox());
     }
 
-    protected void spawnParticles(Box box, Vec3d pVel){
+    /*protected void spawnParticles(Box box, Vec3d pVel){
         if(world != null && world.isClient()){
             Vec3d boxOrigin = new Vec3d(box.minX,box.minY,box.minZ);
             Vec3d boxSize = new Vec3d(box.getXLength(),box.getYLength(),box.getZLength());
@@ -70,7 +70,7 @@ public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity impl
                 amount--;
             }
         }
-    }
+    }*/
 
     protected static double getVolume(Box box){
         double x = box.getXLength();

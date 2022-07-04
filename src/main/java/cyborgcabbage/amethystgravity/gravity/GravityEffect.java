@@ -2,6 +2,8 @@ package cyborgcabbage.amethystgravity.gravity;
 
 import com.fusionflux.gravity_api.api.GravityChangerAPI;
 import com.fusionflux.gravity_api.util.RotationUtil;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -30,6 +32,7 @@ public record GravityEffect(Direction direction, double volume, BlockPos source)
         return new Box(pos1, pos2).offset(player.getPos());
     }
 
+    @Environment(EnvType.CLIENT)
     public static void applyGravityEffectToPlayers(GravityEffect gravityEffect, Box box, World world, boolean opposite, List<Direction> directions, boolean lower){
         List<ClientPlayerEntity> playerEntities = world.getEntitiesByClass(ClientPlayerEntity.class, box.expand(0.5), e -> true);
         for (ClientPlayerEntity player : playerEntities) {
