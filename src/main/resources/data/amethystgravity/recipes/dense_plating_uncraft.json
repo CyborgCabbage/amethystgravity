@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "amethystgravity:dense_plating"
+    }
+  ],
+  "result": {
+    "item": "amethystgravity:plating",
+    "count": 2
+  }
+}

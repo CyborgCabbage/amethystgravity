@@ -46,7 +46,8 @@ public class AmethystGravity implements ModInitializer {
 			new Identifier(MOD_ID, "general"),
 			() -> new ItemStack(Blocks.COBBLESTONE));
 
-	public static final Block PLATING_BLOCK = new PlatingBlock(FabricBlockSettings.of(Material.AMETHYST).nonOpaque().noCollision().breakInstantly());
+	public static final Block PLATING_BLOCK = new PlatingBlock(0.3, FabricBlockSettings.of(Material.AMETHYST).nonOpaque().noCollision().breakInstantly());
+	public static final Block DENSE_PLATING_BLOCK = new PlatingBlock(1.3, FabricBlockSettings.of(Material.AMETHYST).nonOpaque().noCollision().breakInstantly());
 	public static BlockEntityType<PlatingBlockEntity> PLATING_BLOCK_ENTITY;
 
 	public static final Block FIELD_GENERATOR_BLOCK = new FieldGeneratorBlock(FabricBlockSettings.of(Material.STONE).strength(3.5f).requiresTool());
@@ -73,7 +74,8 @@ public class AmethystGravity implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		registerBlockAndItem("plating", PLATING_BLOCK);
-		PLATING_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "plating_block_entity"), FabricBlockEntityTypeBuilder.create(PlatingBlockEntity::new, PLATING_BLOCK).build());
+		registerBlockAndItem("dense_plating", DENSE_PLATING_BLOCK);
+		PLATING_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "plating_block_entity"), FabricBlockEntityTypeBuilder.create(PlatingBlockEntity::new, PLATING_BLOCK, DENSE_PLATING_BLOCK).build());
 
 		registerBlockAndItem("field_generator", FIELD_GENERATOR_BLOCK);
 		FIELD_GENERATOR_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "field_generator_block_entity"), FabricBlockEntityTypeBuilder.create(FieldGeneratorBlockEntity::new, FIELD_GENERATOR_BLOCK).build());

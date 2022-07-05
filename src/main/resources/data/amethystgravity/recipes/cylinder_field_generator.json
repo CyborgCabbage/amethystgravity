@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "D": {
+      "item": "minecraft:dispenser"
+    },
+    "P": {
+      "item": "amethystgravity:plating"
+    }
+  },
+  "pattern": [
+    "P",
+    "D",
+    "P"
+  ],
+  "result": {
+    "item": "amethystgravity:cylinder_field_generator"
+  }
+}

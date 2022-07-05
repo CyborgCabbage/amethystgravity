@@ -47,10 +47,11 @@ public class PlatingBlock extends BlockWithEntity {
     protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
     private final Map<BlockState, VoxelShape> shapesByState;
 
-    public static final double GRAVITY_EFFECT_HEIGHT = 0.9;
+    public final double GRAVITY_EFFECT_HEIGHT;
 
-    public PlatingBlock(Settings settings) {
+    public PlatingBlock(double height, Settings settings) {
         super(settings);
+        GRAVITY_EFFECT_HEIGHT = height;
         setDefaultState(getStateManager().getDefaultState()
                 .with(NORTH, false)
                 .with(EAST, false)
@@ -219,11 +220,11 @@ public class PlatingBlock extends BlockWithEntity {
         return list;
     }
 
-    public static GravityEffect getGravityEffect(Direction direction, BlockPos blockPos){
+    public GravityEffect getGravityEffect(Direction direction, BlockPos blockPos){
         return new GravityEffect(direction, GRAVITY_EFFECT_HEIGHT*1*1, blockPos);
     }
 
-    public static Box getGravityEffectBox(BlockPos blockPos, Direction direction){
+    public Box getGravityEffectBox(BlockPos blockPos, Direction direction){
         double minX = blockPos.getX();
         double minY = blockPos.getY();
         double minZ = blockPos.getZ();

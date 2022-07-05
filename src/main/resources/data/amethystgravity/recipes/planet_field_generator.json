@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "D": {
+      "item": "minecraft:dispenser"
+    },
+    "P": {
+      "item": "amethystgravity:plating"
+    }
+  },
+  "pattern": [
+    " P ",
+    "PDP",
+    " P "
+  ],
+  "result": {
+    "item": "amethystgravity:planet_field_generator"
+  }
+}

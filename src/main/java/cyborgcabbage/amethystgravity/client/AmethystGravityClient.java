@@ -22,6 +22,7 @@ public class AmethystGravityClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), AmethystGravity.PLATING_BLOCK);
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), AmethystGravity.DENSE_PLATING_BLOCK);
         /* Adds our particle textures to vanilla's Texture Atlas so it can be shown properly.
          * Modify the namespace and particle id accordingly.
          *
