@@ -1,0 +1,37 @@
+{
+  "parent": "amethystgravity:gravity/root",
+  "criteria": {
+    "has_gravity_glasses": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "amethystgravity:gravity_glasses"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.amethystgravity.gravity_glasses.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "amethystgravity:gravity_glasses"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.amethystgravity.gravity_glasses.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_gravity_glasses"
+    ]
+  ]
+}

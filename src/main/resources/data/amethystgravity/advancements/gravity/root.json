@@ -1,0 +1,43 @@
+{
+  "criteria": {
+    "has_shard": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:amethyst_shard"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "background": "amethystgravity:textures/gui/background.png",
+    "description": {
+      "translate": "advancements.amethystgravity.root.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.amethystgravity.root.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_shard"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "amethystgravity:plating",
+      "amethystgravity:gravity_glasses"
+    ]
+  }
+}

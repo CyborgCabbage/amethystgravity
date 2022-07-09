@@ -46,7 +46,7 @@ public class AmethystGravity implements ModInitializer {
 			new Identifier(MOD_ID, "general"),
 			() -> new ItemStack(Blocks.COBBLESTONE));
 
-	public static final Block PLATING_BLOCK = new PlatingBlock(0.3, FabricBlockSettings.of(Material.AMETHYST).nonOpaque().noCollision().breakInstantly());
+	public static final Block PLATING_BLOCK = new PlatingBlock(0.6, FabricBlockSettings.of(Material.AMETHYST).nonOpaque().noCollision().breakInstantly());
 	public static final Block DENSE_PLATING_BLOCK = new PlatingBlock(1.3, FabricBlockSettings.of(Material.AMETHYST).nonOpaque().noCollision().breakInstantly());
 	public static BlockEntityType<PlatingBlockEntity> PLATING_BLOCK_ENTITY;
 

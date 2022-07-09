@@ -1,0 +1,42 @@
+{
+  "parent": "amethystgravity:gravity/plating",
+  "criteria": {
+    "has_dense_plating": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "amethystgravity:dense_plating"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.amethystgravity.dense_plating.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "amethystgravity:dense_plating"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.amethystgravity.dense_plating.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_dense_plating"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "amethystgravity:dense_plating_uncraft"
+    ]
+  }
+}

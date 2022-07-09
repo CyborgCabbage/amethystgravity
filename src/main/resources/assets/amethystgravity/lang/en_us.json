@@ -13,5 +13,15 @@
   "amethystgravity.fieldGenerator.depth": "Depth",
   "amethystgravity.fieldGenerator.radius": "Radius",
   "amethystgravity.fieldGenerator.attract": "Polarity: Attract",
-  "amethystgravity.fieldGenerator.repel": "Polarity: Repel"
+  "amethystgravity.fieldGenerator.repel": "Polarity: Repel",
+  "advancements.amethystgravity.root.title" : "Strange Charm",
+  "advancements.amethystgravity.root.description" : "Acquire an amethyst shard",
+  "advancements.amethystgravity.plating.title" : "Walking on Walls",
+  "advancements.amethystgravity.plating.description" : "Craft gravity plating",
+  "advancements.amethystgravity.dense_plating.title" : "Jumping on Walls",
+  "advancements.amethystgravity.dense_plating.description" : "Craft dense gravity plating",
+  "advancements.amethystgravity.gravity_glasses.title" : "Gravity Glasses",
+  "advancements.amethystgravity.gravity_glasses.description" : "Craft a pair of gravity glasses",
+  "advancements.amethystgravity.field_generators.title" : "Field Generators",
+  "advancements.amethystgravity.field_generators.description" : "Craft one of each type of gravity field generator"
 }

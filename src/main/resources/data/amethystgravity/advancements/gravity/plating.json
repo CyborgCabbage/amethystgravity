@@ -1,0 +1,45 @@
+{
+  "parent": "amethystgravity:gravity/root",
+  "criteria": {
+    "has_plating": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "amethystgravity:plating"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.amethystgravity.plating.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "amethystgravity:plating"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.amethystgravity.plating.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_plating"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "amethystgravity:dense_plating",
+      "amethystgravity:field_generator",
+      "amethystgravity:planet_field_generator",
+      "amethystgravity:cylinder_field_generator"
+    ]
+  }
+}

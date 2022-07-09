@@ -4,11 +4,9 @@ import com.fusionflux.gravity_api.api.RotationParameters;
 import com.fusionflux.gravity_api.util.Gravity;
 import com.fusionflux.gravity_api.util.packet.UpdateGravityPacket;
 import cyborgcabbage.amethystgravity.AmethystGravity;
-import cyborgcabbage.amethystgravity.block.AbstractFieldGeneratorBlock;
 import cyborgcabbage.amethystgravity.block.PlatingBlock;
 import cyborgcabbage.amethystgravity.block.entity.AbstractFieldGeneratorBlockEntity;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.network.PacketByteBuf;
@@ -21,7 +19,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class FieldGravityVerifier {
     public static Identifier FIELD_GRAVITY_SOURCE = new Identifier(AmethystGravity.MOD_ID, "field");

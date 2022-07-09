@@ -1,0 +1,67 @@
+{
+  "parent": "amethystgravity:gravity/plating",
+  "criteria": {
+    "has_field_generator": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "amethystgravity:field_generator"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_cylinder_field_generator": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "amethystgravity:cylinder_field_generator"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_planet_field_generator": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "amethystgravity:planet_field_generator"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.amethystgravity.field_generators.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "amethystgravity:field_generator"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.amethystgravity.field_generators.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_field_generator"
+    ],
+    [
+      "has_cylinder_field_generator"
+    ],
+    [
+      "has_planet_field_generator"
+    ]
+  ]
+}
