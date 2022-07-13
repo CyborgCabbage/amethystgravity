@@ -11,7 +11,6 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -31,29 +30,29 @@ import java.util.Optional;
 
 @Mixin(value = Entity.class, priority = 999)
 public abstract class EntityMixin implements GravityData {
-    public ArrayList<GravityEffect> gravityEffectList = new ArrayList<>();
-    public ArrayList<GravityEffect> lowerGravityEffectList = new ArrayList<>();
-    public GravityEffect gravityEffect = null;
-    public int counter = 0;
+    public ArrayList<GravityEffect> amethystgravity$gravityEffectList = new ArrayList<>();
+    public ArrayList<GravityEffect> amethystgravity$lowerGravityEffectList = new ArrayList<>();
+    public GravityEffect amethystgravity$gravityEffect = null;
+    public int amethystgravity$counter = 0;
 
     @Override
     public ArrayList<GravityEffect> getFieldList() {
-        return gravityEffectList;
+        return amethystgravity$gravityEffectList;
     }
 
     @Override
     public ArrayList<GravityEffect> getLowerFieldList() {
-        return lowerGravityEffectList;
+        return amethystgravity$lowerGravityEffectList;
     }
 
     @Override
     public void setFieldGravity(GravityEffect _gravityEffect) {
-        gravityEffect = _gravityEffect;
+        amethystgravity$gravityEffect = _gravityEffect;
     }
 
     @Override
     public GravityEffect getFieldGravity() {
-        return gravityEffect;
+        return amethystgravity$gravityEffect;
     }
 
     @Inject(method = "tick", at = @At("HEAD"))
@@ -64,8 +63,8 @@ public abstract class EntityMixin implements GravityData {
             final GravityEffect currentGravity = getFieldGravity();
             GravityEffect newGravity = null;
             List<GravityEffect> directions = getFieldList();
-            counter++;
-            if (counter >= 5) counter = 0;
+            amethystgravity$counter++;
+            if (amethystgravity$counter >= 5) amethystgravity$counter = 0;
             //If the player is flying or in spectator
             if (!entity.isSpectator()) {
                 //Find the elements of directions which have the lowest volume
@@ -81,7 +80,7 @@ public abstract class EntityMixin implements GravityData {
             }
             Direction oldDirection = currentGravity == null ? null : currentGravity.direction();
             Direction newDirection = newGravity == null ? null : newGravity.direction();
-            if (oldDirection != newDirection || counter == 0) {
+            if (oldDirection != newDirection || amethystgravity$counter == 0) {
                 GravityChangerAPI.addGravity(entity, FieldGravityVerifier.newFieldGravity(newDirection, new RotationParameters()));
             }
             setFieldGravity(newGravity);
@@ -104,8 +103,8 @@ public abstract class EntityMixin implements GravityData {
                 final GravityEffect currentGravity = getFieldGravity();
                 GravityEffect newGravity = null;
                 List<GravityEffect> directions = getFieldList();
-                counter++;
-                if (counter >= 5) counter = 0;
+                amethystgravity$counter++;
+                if (amethystgravity$counter >= 5) amethystgravity$counter = 0;
                 //If the player is flying or in spectator
                 if (!entity.isSpectator() && !isFlying) {
                     //Find the elements of directions which have the lowest volume
@@ -140,7 +139,7 @@ public abstract class EntityMixin implements GravityData {
                 }
                 Direction oldDirection = currentGravity == null ? null : currentGravity.direction();
                 Direction newDirection = newGravity == null ? null : newGravity.direction();
-                if (oldDirection != newDirection || counter == 0) {
+                if (oldDirection != newDirection || amethystgravity$counter == 0) {
                     PacketByteBuf info = newGravity == null ? PacketByteBufs.create() : FieldGravityVerifier.packInfo(newGravity.source());
                     RotationParameters rotationParameters = new RotationParameters().alternateCenter(true).rotateView(!isFallFlying).rotateVelocity(entity.isOnGround());
                     if (entity instanceof ClientPlayerEntity cpe) {
