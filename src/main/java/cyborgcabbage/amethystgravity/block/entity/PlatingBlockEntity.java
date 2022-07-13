@@ -26,4 +26,13 @@ public class PlatingBlockEntity extends BlockEntity{
             }
         }
     }
+
+    public static void serverTick(World world, BlockPos blockPos, BlockState blockState, PlatingBlockEntity blockEntity) {
+        if(blockState.getBlock() instanceof PlatingBlock platingBlock) {
+            for (Direction plateDirection : PlatingBlock.getDirections(blockState)) {
+                Box box = platingBlock.getGravityEffectBox(blockPos, plateDirection);
+                GravityEffect.applyGravityEffectToEntities(platingBlock.getGravityEffect(plateDirection, blockPos), box, world, false, List.of(plateDirection), true);
+            }
+        }
+    }
 }

@@ -77,6 +77,16 @@ public class CylinderFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlo
         GravityEffect.applyGravityEffectToPlayers(getGravityEffect(direction, blockPos), box, world, getPolarity() != 0, dList, false);
     }
 
+    @Override
+    protected void serverTick(World world, BlockPos blockPos, BlockState blockState) {
+        Direction.Axis a = blockState.get(CylinderFieldGeneratorBlock.AXIS);
+        Direction direction = fromAxis(a);
+        //Applying gravity effect
+        Box box = getGravityEffectBox();
+        List<Direction> dList = Arrays.stream(Direction.values()).filter(d -> d.getAxis() != a).toList();
+        GravityEffect.applyGravityEffectToEntities(getGravityEffect(direction, blockPos), box, world, getPolarity() != 0, dList, false);
+    }
+
     private GravityEffect getGravityEffect(Direction direction, BlockPos blockPos){
         return new GravityEffect(direction, getVolume(getGravityEffectBox()), blockPos);
     }

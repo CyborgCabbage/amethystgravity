@@ -2,9 +2,11 @@ package cyborgcabbage.amethystgravity.gravity;
 
 import com.fusionflux.gravity_api.api.GravityChangerAPI;
 import com.fusionflux.gravity_api.util.RotationUtil;
+import cyborgcabbage.amethystgravity.AmethystGravity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -16,20 +18,20 @@ import java.util.*;
 
 public record GravityEffect(Direction direction, double volume, BlockPos source) {
 
-    public static Box getGravityEffectCollider(PlayerEntity player){
-        var d = player.getDimensions(player.getPose());
+    public static Box getGravityEffectCollider(Entity entity){
+        var d = entity.getDimensions(entity.getPose());
         double hw = d.width / 2.0;
-        Vec3d pos1 = RotationUtil.vecPlayerToWorld(hw, 0.6, hw, GravityChangerAPI.getGravityDirection(player));
-        Vec3d pos2 = RotationUtil.vecPlayerToWorld(-hw, 0.0, -hw, GravityChangerAPI.getGravityDirection(player));
-        return new Box(pos1, pos2).offset(player.getPos());
+        Vec3d pos1 = RotationUtil.vecPlayerToWorld(hw, 2*hw, hw, GravityChangerAPI.getGravityDirection(entity));
+        Vec3d pos2 = RotationUtil.vecPlayerToWorld(-hw, 0.0, -hw, GravityChangerAPI.getGravityDirection(entity));
+        return new Box(pos1, pos2).offset(entity.getPos());
     }
 
-    public static Box getLowerGravityEffectCollider(PlayerEntity player){
-        var d = player.getDimensions(player.getPose());
+    public static Box getLowerGravityEffectCollider(Entity entity){
+        var d = entity.getDimensions(entity.getPose());
         double hw = d.width / 2.0;
-        Vec3d pos1 = RotationUtil.vecPlayerToWorld(hw, -0.1, hw, GravityChangerAPI.getGravityDirection(player));
-        Vec3d pos2 = RotationUtil.vecPlayerToWorld(-hw, 0.0, -hw, GravityChangerAPI.getGravityDirection(player));
-        return new Box(pos1, pos2).offset(player.getPos());
+        Vec3d pos1 = RotationUtil.vecPlayerToWorld(hw, -0.1, hw, GravityChangerAPI.getGravityDirection(entity));
+        Vec3d pos2 = RotationUtil.vecPlayerToWorld(-hw, 0.0, -hw, GravityChangerAPI.getGravityDirection(entity));
+        return new Box(pos1, pos2).offset(entity.getPos());
     }
 
     @Environment(EnvType.CLIENT)
@@ -55,8 +57,30 @@ public record GravityEffect(Direction direction, double volume, BlockPos source)
         }
     }
 
-    public static Vec3d getGravityOrigin(PlayerEntity player){
-        var dim = player.getDimensions(player.getPose());
-        return player.getPos().add(RotationUtil.vecPlayerToWorld(0.0, dim.width / 2.0, 0.0, GravityChangerAPI.getGravityDirection(player)));
+    public static void applyGravityEffectToEntities(GravityEffect gravityEffect, Box box, World world, boolean opposite, List<Direction> directions, boolean lower){
+        List<Entity> entities = world.getEntitiesByClass(Entity.class, box.expand(0.5), e -> true);
+        for (Entity entity : entities) {
+            Vec3d boxCentre = box.getCenter();
+            Vec3d entityCentre = getGravityOrigin(entity);
+            Optional<Direction> optionalEffectiveDirection = directions.stream()
+                    .max(Comparator.comparingDouble(d -> boxCentre.add(new Vec3d(d.getUnitVector())).distanceTo(entityCentre)));
+            if(optionalEffectiveDirection.isEmpty()) return;
+            Direction effectiveDirection = optionalEffectiveDirection.get();
+            if(opposite) effectiveDirection = effectiveDirection.getOpposite();
+            gravityEffect = new GravityEffect(effectiveDirection, gravityEffect.volume(), gravityEffect.source());
+            //Get entity collider for gravity effects
+            Box gravityEffectCollider = (gravityEffect.direction().getOpposite() == GravityChangerAPI.getGravityDirection(entity)) ? entity.getBoundingBox() : GravityEffect.getGravityEffectCollider(entity);
+            Box lowerGravityEffectCollider = GravityEffect.getLowerGravityEffectCollider(entity);
+            //Check if the entity's rotation box is colliding with this gravity plates area of effect
+            if (box.intersects(gravityEffectCollider))
+                ((GravityData) entity).getFieldList().add(gravityEffect);
+            if (lower && box.intersects(lowerGravityEffectCollider))
+                ((GravityData) entity).getLowerFieldList().add(gravityEffect);
+        }
+    }
+
+    public static Vec3d getGravityOrigin(Entity entity){
+        var dim = entity.getDimensions(entity.getPose());
+        return entity.getPos().add(RotationUtil.vecPlayerToWorld(0.0, dim.width / 2.0, 0.0, GravityChangerAPI.getGravityDirection(entity)));
     }
 }

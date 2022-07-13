@@ -42,7 +42,13 @@ public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity impl
         blockEntity.clientTick(world, blockPos, blockState);
     }
 
+    public static void serverTick(World world, BlockPos blockPos, BlockState blockState, AbstractFieldGeneratorBlockEntity blockEntity) {
+        blockEntity.serverTick(world, blockPos, blockState);
+    }
+
     protected abstract void clientTick(World world, BlockPos blockPos, BlockState blockState);
+
+    protected abstract void serverTick(World world, BlockPos blockPos, BlockState blockState);
 
     public abstract Box getGravityEffectBox();
 

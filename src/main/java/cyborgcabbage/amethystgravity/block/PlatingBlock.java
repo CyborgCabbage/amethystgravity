@@ -154,7 +154,8 @@ public class PlatingBlock extends BlockWithEntity {
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
         if (world.isClient)
             return checkType(type, AmethystGravity.PLATING_BLOCK_ENTITY, PlatingBlockEntity::clientTick);
-        return null;
+        else
+            return checkType(type, AmethystGravity.PLATING_BLOCK_ENTITY, PlatingBlockEntity::serverTick);
     }
 
     @Override

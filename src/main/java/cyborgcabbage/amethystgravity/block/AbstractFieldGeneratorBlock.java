@@ -42,7 +42,8 @@ public abstract class AbstractFieldGeneratorBlock<K extends AbstractFieldGenerat
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
         if (world.isClient)
             return checkType(type, getBlockEntity(), K::clientTick);
-        return null;
+        else
+            return checkType(type, getBlockEntity(), K::serverTick);
     }
 
     public abstract BlockEntityType<K> getBlockEntity();

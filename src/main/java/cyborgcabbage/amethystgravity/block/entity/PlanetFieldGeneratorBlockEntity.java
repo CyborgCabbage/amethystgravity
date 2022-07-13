@@ -61,9 +61,14 @@ public class PlanetFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlock
         //Applying gravity effect
         Box box = getGravityEffectBox();
         GravityEffect.applyGravityEffectToPlayers(getGravityEffect(blockPos), box, world, getPolarity() != 0, Arrays.asList(Direction.values()), false);
-        //Particles
-        //spawnParticles(box, new Vec3d(0, 0, 0));
     }
+
+    protected void serverTick(World world, BlockPos blockPos, BlockState blockState){
+        //Applying gravity effect
+        Box box = getGravityEffectBox();
+        GravityEffect.applyGravityEffectToEntities(getGravityEffect(blockPos), box, world, getPolarity() != 0, Arrays.asList(Direction.values()), false);
+    }
+
 
     public Box getGravityEffectBox(){
         BlockPos blockPos = getPos();

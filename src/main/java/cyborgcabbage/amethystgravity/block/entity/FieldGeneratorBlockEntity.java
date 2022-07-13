@@ -77,8 +77,14 @@ public class FieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity
         //Applying gravity effect
         Box box = getGravityEffectBox();
         GravityEffect.applyGravityEffectToPlayers(getGravityEffect(direction, blockPos), box, world, getPolarity() != 0, List.of(direction), false);
-        //Particles
-        //spawnParticles(getGravityEffectBox(), new Vec3d(direction.getUnitVector()));
+    }
+
+    @Override
+    protected void serverTick(World world, BlockPos blockPos, BlockState blockState) {
+        Direction direction = blockState.get(FieldGeneratorBlock.FACING).getOpposite();
+        //Applying gravity effect
+        Box box = getGravityEffectBox();
+        GravityEffect.applyGravityEffectToEntities(getGravityEffect(direction, blockPos), box, world, getPolarity() != 0, List.of(direction), false);
     }
 
     public Box getGravityEffectBox(){
