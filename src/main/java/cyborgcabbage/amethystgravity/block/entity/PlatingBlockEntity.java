@@ -10,7 +10,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class PlatingBlockEntity extends BlockEntity{

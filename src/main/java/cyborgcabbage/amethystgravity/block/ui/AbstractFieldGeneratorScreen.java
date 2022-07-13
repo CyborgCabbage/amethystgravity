@@ -2,8 +2,6 @@ package cyborgcabbage.amethystgravity.block.ui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import cyborgcabbage.amethystgravity.AmethystGravity;
-import cyborgcabbage.amethystgravity.block.entity.AbstractFieldGeneratorBlockEntity;
-import cyborgcabbage.amethystgravity.block.entity.FieldGeneratorBlockEntity;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -22,6 +20,7 @@ public abstract class AbstractFieldGeneratorScreen<T extends AbstractFieldGenera
     private static final Identifier TEXTURE = new Identifier(AmethystGravity.MOD_ID, "textures/gui/blank.png");
     protected final T sh;
     ButtonWidget polarityButton;
+    ButtonWidget applyChanges;
 
     public AbstractFieldGeneratorScreen(T handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -60,13 +59,16 @@ public abstract class AbstractFieldGeneratorScreen<T extends AbstractFieldGenera
         int bX = (width - bWidth) / 2;
         int bY = (height - bHeight) / 2 + 5;
         //Polarity Button
-        polarityButton = addDrawableChild(new ButtonWidget(bX, bY + 40, bWidth, bHeight, getPolarityText(), button -> {
-            sendMenuUpdatePacket(FieldGeneratorBlockEntity.Button.POLARITY);
+        polarityButton = addDrawableChild(new ButtonWidget(bX, bY + 30, bWidth, bHeight, getPolarityText(), button -> sh.polarity = 1 - sh.polarity));
+        //Apply Changes
+        applyChanges = addDrawableChild(new ButtonWidget(bX, bY + 55, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.applyChanges"), button -> {
+            sendMenuUpdatePacket(sh.height,sh.width,sh.depth,sh.radius,sh.polarity);
+            close();
         }));
     }
 
     private Text getPolarityText(){
-        if(sh.getPolarity() == 0){
+        if(sh.polarity == 0){
             return Text.translatable("amethystgravity.fieldGenerator.attract");
         }else{
             return Text.translatable("amethystgravity.fieldGenerator.repel");
@@ -90,10 +92,13 @@ public abstract class AbstractFieldGeneratorScreen<T extends AbstractFieldGenera
         textRenderer.draw(matrices, label, tX-textRenderer.getWidth(label)/2.f+0.5f+xOffset, tY-60, Color.DARK_GRAY.getRGB());
     }
 
-    protected void sendMenuUpdatePacket(AbstractFieldGeneratorBlockEntity.Button button){
+    protected void sendMenuUpdatePacket(int height, int width, int depth, int radius, int polarity){
         PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeEnumConstant(button);
-        buf.writeBoolean(hasShiftDown());
+        buf.writeInt(height);
+        buf.writeInt(width);
+        buf.writeInt(depth);
+        buf.writeInt(radius);
+        buf.writeInt(polarity);
         ClientPlayNetworking.send(AmethystGravity.FIELD_GENERATOR_MENU_CHANNEL, buf);
     }
 }

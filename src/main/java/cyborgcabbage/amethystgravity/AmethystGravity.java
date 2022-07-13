@@ -18,14 +18,14 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
+import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
-import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -61,11 +61,11 @@ public class AmethystGravity implements ModInitializer {
 
 	//public static final DefaultParticleType GRAVITY_INDICATOR = FabricParticleTypes.simple();
 
-	public static final ScreenHandlerType<FieldGeneratorScreenHandler> FIELD_GENERATOR_SCREEN_HANDLER = new ScreenHandlerType<>(FieldGeneratorScreenHandler::new);
+	public static final ExtendedScreenHandlerType<FieldGeneratorScreenHandler> FIELD_GENERATOR_SCREEN_HANDLER = new ExtendedScreenHandlerType<>(FieldGeneratorScreenHandler::new);
 
-	public static final ScreenHandlerType<PlanetFieldGeneratorScreenHandler> PLANET_FIELD_GENERATOR_SCREEN_HANDLER = new ScreenHandlerType<>(PlanetFieldGeneratorScreenHandler::new);
+	public static final ExtendedScreenHandlerType<PlanetFieldGeneratorScreenHandler> PLANET_FIELD_GENERATOR_SCREEN_HANDLER = new ExtendedScreenHandlerType<>(PlanetFieldGeneratorScreenHandler::new);
 
-	public static final ScreenHandlerType<CylinderFieldGeneratorScreenHandler> CYLINDER_FIELD_GENERATOR_SCREEN_HANDLER = new ScreenHandlerType<>(CylinderFieldGeneratorScreenHandler::new);
+	public static final ExtendedScreenHandlerType<CylinderFieldGeneratorScreenHandler> CYLINDER_FIELD_GENERATOR_SCREEN_HANDLER = new ExtendedScreenHandlerType<>(CylinderFieldGeneratorScreenHandler::new);
 
 	public static final GravityGlassesArmorMaterial ggam = new GravityGlassesArmorMaterial();
 
@@ -87,18 +87,19 @@ public class AmethystGravity implements ModInitializer {
 		CYLINDER_FIELD_GENERATOR_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "cylinder_field_generator_block_entity"), FabricBlockEntityTypeBuilder.create(CylinderFieldGeneratorBlockEntity::new, CYLINDER_FIELD_GENERATOR_BLOCK).build());
 
 		//Registry.register(Registry.PARTICLE_TYPE, new Identifier(MOD_ID, "gravity_indicator"), GRAVITY_INDICATOR);
-
 		Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "field_generator"), FIELD_GENERATOR_SCREEN_HANDLER);
 		Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "planet_field_generator"), PLANET_FIELD_GENERATOR_SCREEN_HANDLER);
 		Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "cylinder_field_generator"), CYLINDER_FIELD_GENERATOR_SCREEN_HANDLER);
 
 		ServerPlayNetworking.registerGlobalReceiver(FIELD_GENERATOR_MENU_CHANNEL, (server, player, handler, buf, sender) -> {
-			int button = buf.readVarInt();
-			boolean shift = buf.readBoolean();
+			int height  = buf.readInt();
+			int width  = buf.readInt();
+			int depth  = buf.readInt();
+			int radius  = buf.readInt();
+			int polarity  = buf.readInt();
 			server.execute(() -> {
 				if(player.currentScreenHandler instanceof AbstractFieldGeneratorScreenHandler screenHandler){
-					AbstractFieldGeneratorBlockEntity.Button e = AbstractFieldGeneratorBlockEntity.Button.values()[button];
-					screenHandler.pressButton(e, shift);
+					screenHandler.updateSettings(player, height, width, depth, radius, polarity);
 				}
 			});
 		});

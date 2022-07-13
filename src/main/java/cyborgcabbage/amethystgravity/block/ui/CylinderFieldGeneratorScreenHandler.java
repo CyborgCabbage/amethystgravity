@@ -1,27 +1,39 @@
 package cyborgcabbage.amethystgravity.block.ui;
 
 import cyborgcabbage.amethystgravity.AmethystGravity;
-import cyborgcabbage.amethystgravity.block.entity.AbstractFieldGeneratorBlockEntity;
+import cyborgcabbage.amethystgravity.block.entity.CylinderFieldGeneratorBlockEntity;
+import cyborgcabbage.amethystgravity.block.entity.FieldGeneratorBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+
+import java.util.Optional;
 
 public class CylinderFieldGeneratorScreenHandler extends AbstractFieldGeneratorScreenHandler<CylinderFieldGeneratorScreenHandler>{
     //Client
-    public CylinderFieldGeneratorScreenHandler(int syncId, PlayerInventory playerInventory) {
-        super(AmethystGravity.CYLINDER_FIELD_GENERATOR_SCREEN_HANDLER, syncId, playerInventory, 3);
+    public CylinderFieldGeneratorScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf buf) {
+        super(AmethystGravity.CYLINDER_FIELD_GENERATOR_SCREEN_HANDLER, syncId, inventory);
+        this.radius = buf.readInt();
+        this.width = buf.readInt();
+        this.polarity = buf.readInt();
     }
 
     //Server
-    public CylinderFieldGeneratorScreenHandler(int syncId, PropertyDelegate propertyDelegate, ScreenHandlerContext context) {
-        super(AmethystGravity.CYLINDER_FIELD_GENERATOR_SCREEN_HANDLER, syncId, propertyDelegate, context);
+    public CylinderFieldGeneratorScreenHandler(int syncId, ScreenHandlerContext context) {
+        super(AmethystGravity.CYLINDER_FIELD_GENERATOR_SCREEN_HANDLER, syncId, context);
     }
 
     //Server
-    public void pressButton(AbstractFieldGeneratorBlockEntity.Button button, boolean shift){
-        if(button == AbstractFieldGeneratorBlockEntity.Button.POLARITY){
+
+    @Override
+    public void updateSettings(ServerPlayerEntity player, int height, int width, int depth, int radius, int polarity) {
+        setRadius(radius);
+        setWidth(width);
+        this.polarity = polarity;
+        /*if(button == AbstractFieldGeneratorBlockEntity.Button.POLARITY){
             int newValue = 1-propertyDelegate.get(2);
             if(newValue != 0 && newValue != 1) newValue = 0;
             propertyDelegate.set(2, newValue);
@@ -41,29 +53,16 @@ public class CylinderFieldGeneratorScreenHandler extends AbstractFieldGeneratorS
             int threshold = index == 0 ? 1 : 10;
             if (newValue < threshold) newValue = threshold;
             propertyDelegate.set(index, newValue);
-        }
+        }*/
         context.run((world, pos) -> {
             ServerWorld serverWorld = (ServerWorld)world;
+            Optional<CylinderFieldGeneratorBlockEntity> blockEntity = serverWorld.getBlockEntity(pos, AmethystGravity.CYLINDER_FIELD_GENERATOR_BLOCK_ENTITY);
+            blockEntity.ifPresent(be -> {
+                be.updateSettings(player, this.radius, this.width, this.polarity);
+            });
             serverWorld.markDirty(pos);
             serverWorld.getChunkManager().markForUpdate(pos);
         });
-    }
-
-
-
-    //Client
-    public int getRadius(){
-        return propertyDelegate.get(0);
-    }
-
-    public int getWidth(){
-        return propertyDelegate.get(1);
-    }
-
-
-    @Override
-    public int getPolarity() {
-        return propertyDelegate.get(2);
     }
 
     @Override

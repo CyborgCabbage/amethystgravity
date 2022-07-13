@@ -14,6 +14,8 @@
   "amethystgravity.fieldGenerator.radius": "Radius",
   "amethystgravity.fieldGenerator.attract": "Polarity: Attract",
   "amethystgravity.fieldGenerator.repel": "Polarity: Repel",
+  "amethystgravity.fieldGenerator.applyChanges": "Apply Changes",
+  "amethystgravity.fieldGenerator.blocks" : "%d amethyst blocks required, %d found.",
   "advancements.amethystgravity.root.title" : "Strange Charm",
   "advancements.amethystgravity.root.description" : "Acquire an amethyst shard",
   "advancements.amethystgravity.plating.title" : "Walking on Walls",

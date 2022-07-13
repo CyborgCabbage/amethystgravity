@@ -1,8 +1,6 @@
 package cyborgcabbage.amethystgravity.block;
 
-import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.block.entity.AbstractFieldGeneratorBlockEntity;
-import cyborgcabbage.amethystgravity.block.entity.PlanetFieldGeneratorBlockEntity;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
@@ -10,12 +8,13 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.Optional;
 
 public abstract class AbstractFieldGeneratorBlock<K extends AbstractFieldGeneratorBlockEntity> extends BlockWithEntity {
     protected AbstractFieldGeneratorBlock(Settings settings) {
@@ -30,10 +29,8 @@ public abstract class AbstractFieldGeneratorBlock<K extends AbstractFieldGenerat
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!world.isClient) {
-            NamedScreenHandlerFactory screenHandlerFactory = state.createScreenHandlerFactory(world, pos);
-            if (screenHandlerFactory != null) {
-                player.openHandledScreen(screenHandlerFactory);
-            }
+            Optional<K> blockEntity = world.getBlockEntity(pos, getBlockEntity());
+            blockEntity.ifPresent(player::openHandledScreen);
         }
         return ActionResult.SUCCESS;
     }

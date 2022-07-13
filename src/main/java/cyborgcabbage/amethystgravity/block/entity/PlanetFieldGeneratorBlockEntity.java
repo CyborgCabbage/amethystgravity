@@ -4,13 +4,15 @@ import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.block.ui.PlanetFieldGeneratorScreenHandler;
 import cyborgcabbage.amethystgravity.gravity.GravityEffect;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -19,42 +21,18 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class PlanetFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity {
     private static final String RADIUS_KEY = "Radius";
+
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
+
     private int radius = 10;
 
     public PlanetFieldGeneratorBlockEntity(BlockPos pos, BlockState state) {
         super(AmethystGravity.PLANET_FIELD_GENERATOR_BLOCK_ENTITY, pos, state);
-        propertyDelegate = new PropertyDelegate() {
-            @Override
-            public int get(int index) {
-                if (index == 0) {
-                    return radius;
-                } else if(index == 1){
-                    return polarity;
-                }else{
-                    throw new IndexOutOfBoundsException(index);
-                }
-            }
-
-            @Override
-            public void set(int index, int value) {
-                if (index == 0) {
-                    radius = value;
-                } else if(index == 1){
-                    polarity = value;
-                } else {
-                    throw new IndexOutOfBoundsException(index);
-                }
-            }
-
-            @Override
-            public int size() {
-                return 2;
-            }
-        };
     }
 
     protected void clientTick(World world, BlockPos blockPos, BlockState blockState){
@@ -88,7 +66,7 @@ public class PlanetFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlock
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new PlanetFieldGeneratorScreenHandler(syncId, propertyDelegate, ScreenHandlerContext.create(world, getPos()));
+        return new PlanetFieldGeneratorScreenHandler(syncId, ScreenHandlerContext.create(world, getPos()));
     }
 
     @Override
@@ -101,5 +79,25 @@ public class PlanetFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlock
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
         radius = nbt.getInt(RADIUS_KEY);
+    }
+
+    @Override
+    public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+        buf.writeInt(radius);
+        buf.writeInt(polarity);
+    }
+
+    public void updateSettings(ServerPlayerEntity player, int radius, int polarity){
+        int oldRadius = this.radius;
+        int oldPolarity = this.polarity;
+        setRadius(radius);
+        setPolarity(polarity);
+        int required = calculateRequiredAmethyst();
+        int found = searchAmethyst();
+        if(required > found){
+            setRadius(oldRadius);
+            setPolarity(oldPolarity);
+        }
+        player.sendMessage(Text.translatable("amethystgravity.fieldGenerator.blocks", required, found).formatted(required > found ? Formatting.RED : Formatting.GREEN), true);
     }
 }

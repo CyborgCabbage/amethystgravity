@@ -1,27 +1,33 @@
 package cyborgcabbage.amethystgravity.block.ui;
 
-import cyborgcabbage.amethystgravity.block.entity.AbstractFieldGeneratorBlockEntity;
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.*;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public abstract class AbstractFieldGeneratorScreenHandler<T extends AbstractFieldGeneratorScreenHandler> extends ScreenHandler {
     protected final ScreenHandlerContext context;
-    protected final PropertyDelegate propertyDelegate;
+
+    public int height;
+    public int width;
+    public int depth;
+    public int radius;
+    public int polarity;
 
     //Client
-    public AbstractFieldGeneratorScreenHandler(ScreenHandlerType<T> sht, int syncId, PlayerInventory playerInventory, int pdSize) {
-        this(sht, syncId, new ArrayPropertyDelegate(pdSize), ScreenHandlerContext.EMPTY);
+    public AbstractFieldGeneratorScreenHandler(ScreenHandlerType<T> sht, int syncId, PlayerInventory playerInventory) {
+        this(sht, syncId, ScreenHandlerContext.EMPTY);
     }
 
     //Server
-    public AbstractFieldGeneratorScreenHandler(ScreenHandlerType<T> sht, int syncId, PropertyDelegate _propertyDelegate, ScreenHandlerContext _context) {
+    public AbstractFieldGeneratorScreenHandler(ScreenHandlerType<T> sht, int syncId, ScreenHandlerContext _context) {
         super(sht, syncId);
         context = _context;
-        propertyDelegate = _propertyDelegate;
-        addProperties(propertyDelegate);
     }
 
     @Override
@@ -31,12 +37,30 @@ public abstract class AbstractFieldGeneratorScreenHandler<T extends AbstractFiel
 
     protected abstract Block getBlock();
 
-    public abstract void pressButton(AbstractFieldGeneratorBlockEntity.Button button, boolean shift);
-
-    public abstract int getPolarity();
+    public abstract void updateSettings(ServerPlayerEntity player, int height, int width, int depth, int radius, int polarity);
 
     @Override
     public ItemStack transferSlot(PlayerEntity player, int index) {
         return null;
+    }
+
+    public void setHeight(int value) {
+        height = value;
+        if(height < 1) height = 1;
+    }
+
+    public void setWidth(int value) {
+        width = value;
+        if(width < 10) width = 10;
+    }
+
+    public void setDepth(int value) {
+        depth = value;
+        if(depth < 10) depth = 10;
+    }
+
+    public void setRadius(int value) {
+        radius = value;
+        if(radius < 1) radius = 1;
     }
 }

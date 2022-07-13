@@ -5,16 +5,16 @@ import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.block.FieldGeneratorBlock;
 import cyborgcabbage.amethystgravity.block.ui.FieldGeneratorScreenHandler;
 import cyborgcabbage.amethystgravity.gravity.GravityEffect;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -34,42 +34,6 @@ public class FieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity
 
     public FieldGeneratorBlockEntity(BlockPos pos, BlockState state) {
         super(AmethystGravity.FIELD_GENERATOR_BLOCK_ENTITY, pos, state);
-        propertyDelegate = new PropertyDelegate() {
-            @Override
-            public int get(int index) {
-                switch(index){
-                    case 0 -> {
-                        return height;
-                    }
-                    case 1 -> {
-                        return width;
-                    }
-                    case 2 -> {
-                        return depth;
-                    }
-                    case 3 -> {
-                        return polarity;
-                    }
-                    default -> throw new IndexOutOfBoundsException(index);
-                }
-            }
-
-            @Override
-            public void set(int index, int value) {
-                switch(index){
-                    case 0 -> height = value;
-                    case 1 -> width = value;
-                    case 2 -> depth = value;
-                    case 3 -> polarity = value;
-                    default -> throw new IndexOutOfBoundsException(index);
-                }
-            }
-
-            @Override
-            public int size() {
-                return 4;
-            }
-        };
     }
 
     protected void clientTick(World world, BlockPos blockPos, BlockState blockState){
@@ -115,6 +79,16 @@ public class FieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity
         return depth*0.1;
     }
 
+    public void setHeight(int height) {
+        this.height = height;
+    }
+    public void setWidth(int width) {
+        this.width = width;
+    }
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }
+
     @Override
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
@@ -134,6 +108,34 @@ public class FieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new FieldGeneratorScreenHandler(syncId, propertyDelegate, ScreenHandlerContext.create(world, getPos()));
+        return new FieldGeneratorScreenHandler(syncId, ScreenHandlerContext.create(world, getPos()));
+    }
+
+    @Override
+    public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+        buf.writeInt(height);
+        buf.writeInt(width);
+        buf.writeInt(depth);
+        buf.writeInt(polarity);
+    }
+
+    public void updateSettings(ServerPlayerEntity player, int height, int width, int depth, int polarity){
+        int oldHeight = this.height;
+        int oldWidth = this.width;
+        int oldDepth = this.depth;
+        int oldPolarity = this.polarity;
+        setHeight(height);
+        setWidth(width);
+        setDepth(depth);
+        setPolarity(polarity);
+        int required = calculateRequiredAmethyst();
+        int found = searchAmethyst();
+        if(required > found){
+            setHeight(oldHeight);
+            setWidth(oldWidth);
+            setDepth(oldDepth);
+            setPolarity(oldPolarity);
+        }
+        player.sendMessage(Text.translatable("amethystgravity.fieldGenerator.blocks", required, found).formatted(required > found ? Formatting.RED : Formatting.GREEN), true);
     }
 }

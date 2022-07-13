@@ -1,41 +1,29 @@
 package cyborgcabbage.amethystgravity.block.entity;
 
-import cyborgcabbage.amethystgravity.AmethystGravity;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity implements NamedScreenHandlerFactory {
-    protected PropertyDelegate propertyDelegate;
+import java.util.HashSet;
+
+public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory {
     private static final String POLARITY_KEY = "Polarity";
     protected int polarity = 0;//0 = attract, 1 = repel
 
     public AbstractFieldGeneratorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
-    }
-
-    public enum Button {
-        HEIGHT_UP,
-        HEIGHT_DOWN,
-        WIDTH_UP,
-        WIDTH_DOWN,
-        DEPTH_UP,
-        DEPTH_DOWN,
-        RADIUS_UP,
-        RADIUS_DOWN,
-        POLARITY
     }
 
     public static void clientTick(World world, BlockPos blockPos, BlockState blockState, AbstractFieldGeneratorBlockEntity blockEntity) {
@@ -44,6 +32,10 @@ public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity impl
 
     public static void serverTick(World world, BlockPos blockPos, BlockState blockState, AbstractFieldGeneratorBlockEntity blockEntity) {
         blockEntity.serverTick(world, blockPos, blockState);
+    }
+
+    public int calculateRequiredAmethyst() {
+        return Math.max((int)Math.floor(Math.pow(getVolume(), 2.0/3.0))/4, 0);
     }
 
     protected abstract void clientTick(World world, BlockPos blockPos, BlockState blockState);
@@ -59,24 +51,6 @@ public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity impl
     public double getSurfaceArea(){
         return getSurfaceArea(getGravityEffectBox());
     }
-
-    /*protected void spawnParticles(Box box, Vec3d pVel){
-        if(world != null && world.isClient()){
-            Vec3d boxOrigin = new Vec3d(box.minX,box.minY,box.minZ);
-            Vec3d boxSize = new Vec3d(box.getXLength(),box.getYLength(),box.getZLength());
-            Random rand = world.getRandom();
-            double amount = getSurfaceArea(box)/20.0;
-            double temp = rand.nextDouble();
-            while(amount > temp){
-                Vec3d randomVec = new Vec3d(rand.nextDouble(), rand.nextDouble(), rand.nextDouble());
-                Vec3d pPos = boxOrigin.add(boxSize.multiply(randomVec));
-                DefaultParticleType particleType = AmethystGravity.GRAVITY_INDICATOR;
-                if(!world.getBlockState(new BlockPos(pPos)).isOpaque())
-                    world.addParticle(particleType,pPos.x,pPos.y,pPos.z,pVel.x,pVel.y,pVel.z);
-                amount--;
-            }
-        }
-    }*/
 
     protected static double getVolume(Box box){
         double x = box.getXLength();
@@ -94,6 +68,9 @@ public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity impl
 
     public int getPolarity(){
         return polarity;
+    }
+    public void setPolarity(int polarity) {
+        this.polarity = polarity;
     }
 
     @Override
@@ -120,5 +97,23 @@ public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity impl
     @Override
     public NbtCompound toInitialChunkDataNbt() {
         return createNbt();
+    }
+
+    protected int searchAmethyst(){
+        HashSet<BlockPos> blocks = new HashSet<>();
+        blocks.add(pos);
+        for (int i = 0; i < 32; i++) {
+            HashSet<BlockPos> newBlocks = new HashSet<>();
+            for (BlockPos blockPos : blocks) {
+                for (Direction value : Direction.values()) {
+                    var offset = blockPos.offset(value);
+                    if(world.getBlockState(offset).isOf(Blocks.AMETHYST_BLOCK)) newBlocks.add(offset);
+                }
+            }
+            var sizeBefore = blocks.size();
+            blocks.addAll(newBlocks);
+            if(sizeBefore == blocks.size()) break;
+        }
+        return blocks.size();
     }
 }

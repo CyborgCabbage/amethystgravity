@@ -1,31 +1,36 @@
 package cyborgcabbage.amethystgravity.block.ui;
 
 import cyborgcabbage.amethystgravity.AmethystGravity;
-import cyborgcabbage.amethystgravity.block.entity.AbstractFieldGeneratorBlockEntity;
+import cyborgcabbage.amethystgravity.block.entity.FieldGeneratorBlockEntity;
 import cyborgcabbage.amethystgravity.block.entity.PlanetFieldGeneratorBlockEntity;
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.ArrayPropertyDelegate;
-import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.screen.ScreenHandler;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+
+import java.util.Optional;
 
 public class PlanetFieldGeneratorScreenHandler extends AbstractFieldGeneratorScreenHandler<PlanetFieldGeneratorScreenHandler> {
     //Client
-    public PlanetFieldGeneratorScreenHandler(int syncId, PlayerInventory playerInventory) {
-        super(AmethystGravity.PLANET_FIELD_GENERATOR_SCREEN_HANDLER, syncId, playerInventory, 2);
+    public PlanetFieldGeneratorScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf buf) {
+        super(AmethystGravity.PLANET_FIELD_GENERATOR_SCREEN_HANDLER, syncId, inventory);
+        this.radius = buf.readInt();
+        this.polarity = buf.readInt();
     }
 
     //Server
-    public PlanetFieldGeneratorScreenHandler(int syncId, PropertyDelegate propertyDelegate, ScreenHandlerContext context) {
-        super(AmethystGravity.PLANET_FIELD_GENERATOR_SCREEN_HANDLER, syncId, propertyDelegate, context);
+    public PlanetFieldGeneratorScreenHandler(int syncId, ScreenHandlerContext context) {
+        super(AmethystGravity.PLANET_FIELD_GENERATOR_SCREEN_HANDLER, syncId, context);
     }
 
     //Server
-    public void pressButton(PlanetFieldGeneratorBlockEntity.Button button, boolean shift){
-        if(button == AbstractFieldGeneratorBlockEntity.Button.POLARITY){
+    @Override
+    public void updateSettings(ServerPlayerEntity player, int height, int width, int depth, int radius, int polarity) {
+        setRadius(radius);
+        this.polarity = polarity;
+        /*if(button == AbstractFieldGeneratorBlockEntity.Button.POLARITY){
             int newValue = 1-propertyDelegate.get(1);
             if(newValue != 0 && newValue != 1) newValue = 0;
             propertyDelegate.set(1, newValue);
@@ -40,22 +45,14 @@ public class PlanetFieldGeneratorScreenHandler extends AbstractFieldGeneratorScr
             int threshold = 1;
             if (newValue < threshold) newValue = threshold;
             propertyDelegate.set(0, newValue);
-        }
+        }*/
         context.run((world, pos) -> {
             ServerWorld serverWorld = (ServerWorld)world;
+            Optional<PlanetFieldGeneratorBlockEntity> blockEntity = serverWorld.getBlockEntity(pos, AmethystGravity.PLANET_FIELD_GENERATOR_BLOCK_ENTITY);
+            blockEntity.ifPresent(be -> be.updateSettings(player, this.radius, this.polarity));
             serverWorld.markDirty(pos);
             serverWorld.getChunkManager().markForUpdate(pos);
         });
-    }
-
-    //Client
-    public int getRadius(){
-        return propertyDelegate.get(0);
-    }
-
-    @Override
-    public int getPolarity() {
-        return propertyDelegate.get(1);
     }
 
     @Override

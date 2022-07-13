@@ -6,13 +6,15 @@ import cyborgcabbage.amethystgravity.block.CylinderFieldGeneratorBlock;
 import cyborgcabbage.amethystgravity.block.ui.CylinderFieldGeneratorScreenHandler;
 import cyborgcabbage.amethystgravity.gravity.GravityEffect;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -20,51 +22,26 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 public class CylinderFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity{
     private static final String RADIUS_KEY = "Radius";
     private static final String WIDTH_KEY = "Width";
     private int radius = 10;
+
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
     private int width = 10;
 
     public CylinderFieldGeneratorBlockEntity(BlockPos pos, BlockState state) {
         super(AmethystGravity.CYLINDER_FIELD_GENERATOR_BLOCK_ENTITY, pos, state);
-        propertyDelegate = new PropertyDelegate() {
-            @Override
-            public int get(int index) {
-                switch(index){
-                    case 0 -> {
-                        return radius;
-                    }
-                    case 1 -> {
-                        return width;
-                    }
-                    case 2 -> {
-                        return polarity;
-                    }
-                    default -> throw new IndexOutOfBoundsException(index);
-                }
-            }
-
-            @Override
-            public void set(int index, int value) {
-                switch(index){
-                    case 0 -> radius = value;
-                    case 1 -> width = value;
-                    case 2 -> polarity = value;
-                    default -> throw new IndexOutOfBoundsException(index);
-                }
-            }
-
-            @Override
-            public int size() {
-                return 3;
-            }
-        };
     }
 
 
@@ -138,6 +115,29 @@ public class CylinderFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlo
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new CylinderFieldGeneratorScreenHandler(syncId, propertyDelegate, ScreenHandlerContext.create(world, getPos()));
+        return new CylinderFieldGeneratorScreenHandler(syncId, ScreenHandlerContext.create(world, getPos()));
+    }
+
+    @Override
+    public void writeScreenOpeningData(ServerPlayerEntity serverPlayerEntity, PacketByteBuf packetByteBuf) {
+        packetByteBuf.writeInt(radius);
+        packetByteBuf.writeInt(width);
+    }
+
+    public void updateSettings(ServerPlayerEntity player, int radius, int width, int polarity){
+        int oldRadius = this.radius;
+        int oldWidth = this.width;
+        int oldPolarity = this.polarity;
+        setRadius(radius);
+        setWidth(width);
+        setPolarity(polarity);
+        int required = calculateRequiredAmethyst();
+        int found = searchAmethyst();
+        if(required > found){
+            setRadius(oldRadius);
+            setWidth(oldWidth);
+            setPolarity(oldPolarity);
+        }
+        player.sendMessage(Text.translatable("amethystgravity.fieldGenerator.blocks", required, found).formatted(required > found ? Formatting.RED : Formatting.GREEN), true);
     }
 }
