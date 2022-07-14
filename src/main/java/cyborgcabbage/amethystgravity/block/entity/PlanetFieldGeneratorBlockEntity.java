@@ -11,6 +11,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
@@ -45,6 +46,17 @@ public class PlanetFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlock
         //Applying gravity effect
         Box box = getGravityEffectBox();
         GravityEffect.applyGravityEffectToEntities(getGravityEffect(blockPos), box, world, getPolarity() != 0, Arrays.asList(Direction.values()), false);
+        //Check fuel source
+        if(world.getRandom().nextInt(20) == 0){
+            int found = searchAmethyst();
+            while (radius > 1 && calculateRequiredAmethyst() > found) {
+                radius--;
+            }
+            if(world instanceof ServerWorld sw) {
+                sw.markDirty(pos);
+                sw.getChunkManager().markForUpdate(pos);
+            }
+        }
     }
 
 

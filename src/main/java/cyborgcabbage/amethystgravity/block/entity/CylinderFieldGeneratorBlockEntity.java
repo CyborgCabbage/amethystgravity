@@ -13,6 +13,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
@@ -62,6 +63,20 @@ public class CylinderFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlo
         Box box = getGravityEffectBox();
         List<Direction> dList = Arrays.stream(Direction.values()).filter(d -> d.getAxis() != a).toList();
         GravityEffect.applyGravityEffectToEntities(getGravityEffect(direction, blockPos), box, world, getPolarity() != 0, dList, false);
+        //Check fuel source
+        if(world.getRandom().nextInt(20) == 0){
+            int found = searchAmethyst();
+            while (radius > 1 && calculateRequiredAmethyst() > found) {
+                radius--;
+            }
+            while (width > 10 && calculateRequiredAmethyst() > found) {
+                width--;
+            }
+            if(world instanceof ServerWorld sw) {
+                sw.markDirty(pos);
+                sw.getChunkManager().markForUpdate(pos);
+            }
+        }
     }
 
     private GravityEffect getGravityEffect(Direction direction, BlockPos blockPos){
@@ -122,6 +137,7 @@ public class CylinderFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlo
     public void writeScreenOpeningData(ServerPlayerEntity serverPlayerEntity, PacketByteBuf packetByteBuf) {
         packetByteBuf.writeInt(radius);
         packetByteBuf.writeInt(width);
+        packetByteBuf.writeInt(polarity);
     }
 
     public void updateSettings(ServerPlayerEntity player, int radius, int width, int polarity){
