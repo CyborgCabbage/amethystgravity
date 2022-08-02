@@ -126,7 +126,7 @@ public class FieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new FieldGeneratorScreenHandler(syncId, ScreenHandlerContext.create(world, getPos()));
+        return new FieldGeneratorScreenHandler(syncId, ScreenHandlerContext.create(world, getPos()), isCreative());
     }
 
     @Override

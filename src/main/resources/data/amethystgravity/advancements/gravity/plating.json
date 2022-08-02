@@ -36,10 +36,7 @@
   ],
   "rewards": {
     "recipes": [
-      "amethystgravity:dense_plating",
-      "amethystgravity:field_generator",
-      "amethystgravity:planet_field_generator",
-      "amethystgravity:cylinder_field_generator"
+      "amethystgravity:dense_plating"
     ]
   }
 }

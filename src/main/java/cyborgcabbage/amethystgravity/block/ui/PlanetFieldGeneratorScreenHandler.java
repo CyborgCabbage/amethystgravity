@@ -15,14 +15,14 @@ import java.util.Optional;
 public class PlanetFieldGeneratorScreenHandler extends AbstractFieldGeneratorScreenHandler<PlanetFieldGeneratorScreenHandler> {
     //Client
     public PlanetFieldGeneratorScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf buf) {
-        super(AmethystGravity.PLANET_FIELD_GENERATOR_SCREEN_HANDLER, syncId, inventory);
+        super(AmethystGravity.PLANET_FIELD_GENERATOR_SCREEN_HANDLER, syncId);
         this.radius = buf.readInt();
         this.polarity = buf.readInt();
     }
 
     //Server
-    public PlanetFieldGeneratorScreenHandler(int syncId, ScreenHandlerContext context) {
-        super(AmethystGravity.PLANET_FIELD_GENERATOR_SCREEN_HANDLER, syncId, context);
+    public PlanetFieldGeneratorScreenHandler(int syncId, ScreenHandlerContext context, boolean _creative) {
+        super(AmethystGravity.PLANET_FIELD_GENERATOR_SCREEN_HANDLER, syncId, context, _creative);
     }
 
     //Server
@@ -57,6 +57,6 @@ public class PlanetFieldGeneratorScreenHandler extends AbstractFieldGeneratorScr
 
     @Override
     protected Block getBlock() {
-        return AmethystGravity.PLANET_FIELD_GENERATOR_BLOCK;
+        return creative ? AmethystGravity.PLANET_FIELD_GENERATOR_BLOCK_CREATIVE : AmethystGravity.PLANET_FIELD_GENERATOR_BLOCK;
     }
 }

@@ -14,7 +14,7 @@ import java.util.Optional;
 public class FieldGeneratorScreenHandler extends AbstractFieldGeneratorScreenHandler<FieldGeneratorScreenHandler> {
     //Client
     public FieldGeneratorScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf buf) {
-        super(AmethystGravity.FIELD_GENERATOR_SCREEN_HANDLER, syncId, inventory);
+        super(AmethystGravity.FIELD_GENERATOR_SCREEN_HANDLER, syncId);
         this.height = buf.readInt();
         this.width = buf.readInt();
         this.depth = buf.readInt();
@@ -22,8 +22,8 @@ public class FieldGeneratorScreenHandler extends AbstractFieldGeneratorScreenHan
     }
 
     //Server
-    public FieldGeneratorScreenHandler(int syncId, ScreenHandlerContext context) {
-        super(AmethystGravity.FIELD_GENERATOR_SCREEN_HANDLER, syncId, context);
+    public FieldGeneratorScreenHandler(int syncId, ScreenHandlerContext context, boolean _creative) {
+        super(AmethystGravity.FIELD_GENERATOR_SCREEN_HANDLER, syncId, context, _creative);
     }
 
     //Server
@@ -69,6 +69,7 @@ public class FieldGeneratorScreenHandler extends AbstractFieldGeneratorScreenHan
 
     @Override
     protected Block getBlock() {
-        return AmethystGravity.FIELD_GENERATOR_BLOCK;
+
+        return creative ? AmethystGravity.FIELD_GENERATOR_BLOCK_CREATIVE : AmethystGravity.FIELD_GENERATOR_BLOCK;
     }
 }

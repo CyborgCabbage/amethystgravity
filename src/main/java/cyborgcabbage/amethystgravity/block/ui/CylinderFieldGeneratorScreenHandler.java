@@ -15,15 +15,15 @@ import java.util.Optional;
 public class CylinderFieldGeneratorScreenHandler extends AbstractFieldGeneratorScreenHandler<CylinderFieldGeneratorScreenHandler>{
     //Client
     public CylinderFieldGeneratorScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf buf) {
-        super(AmethystGravity.CYLINDER_FIELD_GENERATOR_SCREEN_HANDLER, syncId, inventory);
+        super(AmethystGravity.CYLINDER_FIELD_GENERATOR_SCREEN_HANDLER, syncId);
         this.radius = buf.readInt();
         this.width = buf.readInt();
         this.polarity = buf.readInt();
     }
 
     //Server
-    public CylinderFieldGeneratorScreenHandler(int syncId, ScreenHandlerContext context) {
-        super(AmethystGravity.CYLINDER_FIELD_GENERATOR_SCREEN_HANDLER, syncId, context);
+    public CylinderFieldGeneratorScreenHandler(int syncId, ScreenHandlerContext context, boolean _creative) {
+        super(AmethystGravity.CYLINDER_FIELD_GENERATOR_SCREEN_HANDLER, syncId, context, _creative);
     }
 
     //Server
@@ -67,6 +67,6 @@ public class CylinderFieldGeneratorScreenHandler extends AbstractFieldGeneratorS
 
     @Override
     protected Block getBlock() {
-        return AmethystGravity.CYLINDER_FIELD_GENERATOR_BLOCK;
+        return creative ? AmethystGravity.CYLINDER_FIELD_GENERATOR_BLOCK_CREATIVE : AmethystGravity.CYLINDER_FIELD_GENERATOR_BLOCK;
     }
 }

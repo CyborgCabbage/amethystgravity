@@ -1,0 +1,102 @@
+{
+  "parent": "amethystgravity:gravity/field_generator",
+  "criteria": {
+    "has_gravity_anchor_north": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "amethystgravity:gravity_anchor_north"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_gravity_anchor_south": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "amethystgravity:gravity_anchor_south"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_gravity_anchor_east": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "amethystgravity:gravity_anchor_east"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_gravity_anchor_west": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "amethystgravity:gravity_anchor_west"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_gravity_anchor_up": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "amethystgravity:gravity_anchor_up"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_gravity_anchor_down": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "amethystgravity:gravity_anchor_down"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.amethystgravity.gravity_anchor.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "amethystgravity:gravity_anchor_north"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.amethystgravity.gravity_anchor.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_gravity_anchor_north",
+      "has_gravity_anchor_south",
+      "has_gravity_anchor_east",
+      "has_gravity_anchor_west",
+      "has_gravity_anchor_up",
+      "has_gravity_anchor_down"
+    ]
+  ]
+}

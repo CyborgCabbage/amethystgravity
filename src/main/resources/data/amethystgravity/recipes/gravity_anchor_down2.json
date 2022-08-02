@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "C": {
+      "item": "minecraft:compass"
+    },
+    "F": {
+      "item": "amethystgravity:field_generator"
+    }
+  },
+  "pattern": [
+    "F ",
+    " C"
+  ],
+  "result": {
+    "item": "amethystgravity:gravity_anchor_down"
+  }
+}

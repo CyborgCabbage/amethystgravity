@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "amethystgravity:item/gravity_anchor_west"
+  }
+}

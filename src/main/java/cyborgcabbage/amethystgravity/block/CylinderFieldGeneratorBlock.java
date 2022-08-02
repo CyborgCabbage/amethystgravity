@@ -18,8 +18,8 @@ import net.minecraft.util.math.Direction;
 public class CylinderFieldGeneratorBlock extends AbstractFieldGeneratorBlock<CylinderFieldGeneratorBlockEntity>{
     public static final EnumProperty<Direction.Axis> AXIS = Properties.AXIS;
 
-    public CylinderFieldGeneratorBlock(Settings settings) {
-        super(settings);
+    public CylinderFieldGeneratorBlock(boolean _creative, Settings settings) {
+        super(_creative, settings);
         setDefaultState(stateManager.getDefaultState().with(AXIS, Direction.Axis.Y));
     }
 
@@ -46,6 +46,7 @@ public class CylinderFieldGeneratorBlock extends AbstractFieldGeneratorBlock<Cyl
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
         builder.add(AXIS);
     }
 }

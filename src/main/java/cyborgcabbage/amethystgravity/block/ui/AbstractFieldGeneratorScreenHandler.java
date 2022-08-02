@@ -19,15 +19,18 @@ public abstract class AbstractFieldGeneratorScreenHandler<T extends AbstractFiel
     public int radius;
     public int polarity;
 
+    public boolean creative;
+
     //Client
-    public AbstractFieldGeneratorScreenHandler(ScreenHandlerType<T> sht, int syncId, PlayerInventory playerInventory) {
-        this(sht, syncId, ScreenHandlerContext.EMPTY);
+    public AbstractFieldGeneratorScreenHandler(ScreenHandlerType<T> sht, int syncId) {
+        this(sht, syncId, ScreenHandlerContext.EMPTY, false);
     }
 
     //Server
-    public AbstractFieldGeneratorScreenHandler(ScreenHandlerType<T> sht, int syncId, ScreenHandlerContext _context) {
+    public AbstractFieldGeneratorScreenHandler(ScreenHandlerType<T> sht, int syncId, ScreenHandlerContext _context, boolean _creative) {
         super(sht, syncId);
         context = _context;
+        creative = _creative;
     }
 
     @Override

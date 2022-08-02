@@ -33,9 +33,7 @@
     "fabricloader": ">=0.11.3",
     "fabric": "*",
     "minecraft": "1.19",
-    "java": ">=17"
-  },
-  "suggests": {
-    "another-mod": "*"
+    "java": ">=17",
+    "gravity_api": ">=0.7.17"
   }
 }

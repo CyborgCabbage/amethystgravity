@@ -2,6 +2,7 @@ package cyborgcabbage.amethystgravity.block.entity;
 
 import com.fusionflux.gravity_api.util.RotationUtil;
 import cyborgcabbage.amethystgravity.AmethystGravity;
+import cyborgcabbage.amethystgravity.block.AbstractFieldGeneratorBlock;
 import cyborgcabbage.amethystgravity.block.CylinderFieldGeneratorBlock;
 import cyborgcabbage.amethystgravity.block.ui.CylinderFieldGeneratorScreenHandler;
 import cyborgcabbage.amethystgravity.gravity.GravityEffect;
@@ -130,7 +131,7 @@ public class CylinderFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlo
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new CylinderFieldGeneratorScreenHandler(syncId, ScreenHandlerContext.create(world, getPos()));
+        return new CylinderFieldGeneratorScreenHandler(syncId, ScreenHandlerContext.create(world, getPos()), isCreative());
     }
 
     @Override

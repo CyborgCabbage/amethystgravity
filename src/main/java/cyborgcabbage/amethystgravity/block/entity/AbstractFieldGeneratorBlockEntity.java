@@ -1,5 +1,7 @@
 package cyborgcabbage.amethystgravity.block.entity;
 
+import cyborgcabbage.amethystgravity.block.AbstractFieldGeneratorBlock;
+import cyborgcabbage.amethystgravity.block.CylinderFieldGeneratorBlock;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -35,6 +37,7 @@ public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity impl
     }
 
     public int calculateRequiredAmethyst() {
+        if(isCreative()) return 0;
         return Math.max((int)Math.floor(Math.pow(getVolume(), 2.0/3.0))/4, 0);
     }
 
@@ -57,6 +60,11 @@ public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity impl
         double y = box.getYLength();
         double z = box.getZLength();
         return x*y*z;
+    }
+
+    protected boolean isCreative(){
+        if(getCachedState().getBlock() instanceof AbstractFieldGeneratorBlock b) return b.creative;
+        return false;
     }
 
     protected static double getSurfaceArea(Box box){

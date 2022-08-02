@@ -18,8 +18,8 @@ import net.minecraft.util.math.Direction;
 public class FieldGeneratorBlock extends AbstractFieldGeneratorBlock<FieldGeneratorBlockEntity> {
     public static final DirectionProperty FACING = FacingBlock.FACING;
 
-    public FieldGeneratorBlock(Settings settings) {
-        super(settings);
+    public FieldGeneratorBlock(boolean _creative, Settings settings) {
+        super(_creative, settings);
         setDefaultState(stateManager.getDefaultState().with(FACING, Direction.NORTH));
     }
 
@@ -51,6 +51,7 @@ public class FieldGeneratorBlock extends AbstractFieldGeneratorBlock<FieldGenera
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
         builder.add(FACING);
     }
 }

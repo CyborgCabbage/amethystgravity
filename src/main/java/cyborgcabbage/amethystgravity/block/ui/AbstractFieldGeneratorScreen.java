@@ -18,14 +18,14 @@ import java.text.DecimalFormat;
 
 public abstract class AbstractFieldGeneratorScreen<T extends AbstractFieldGeneratorScreenHandler> extends HandledScreen<T> {
     private static final Identifier TEXTURE = new Identifier(AmethystGravity.MOD_ID, "textures/gui/blank.png");
-    protected final T sh;
     ButtonWidget polarityButton;
     ButtonWidget applyChanges;
+    protected int magnitude = 10;
 
     public AbstractFieldGeneratorScreen(T handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         playerInventoryTitleY = -100;
-        sh = handler;
+        backgroundWidth = 192;
     }
 
     @Override
@@ -50,6 +50,14 @@ public abstract class AbstractFieldGeneratorScreen<T extends AbstractFieldGenera
     }
 
     @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        magnitude = 10;
+        if(hasShiftDown()) magnitude /= 10;
+        if(hasControlDown()) magnitude *= 10;
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
     protected void init() {
         super.init();
         // Center the title
@@ -59,23 +67,30 @@ public abstract class AbstractFieldGeneratorScreen<T extends AbstractFieldGenera
         int bX = (width - bWidth) / 2;
         int bY = (height - bHeight) / 2 + 5;
         //Polarity Button
-        polarityButton = addDrawableChild(new ButtonWidget(bX, bY + 30, bWidth, bHeight, getPolarityText(), button -> sh.polarity = 1 - sh.polarity));
+        polarityButton = addDrawableChild(new ButtonWidget(bX, bY + 30, bWidth, bHeight, getPolarityText(), button -> handler.polarity = 1 - handler.polarity));
         //Apply Changes
         applyChanges = addDrawableChild(new ButtonWidget(bX, bY + 55, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.applyChanges"), button -> {
-            sendMenuUpdatePacket(sh.height,sh.width,sh.depth,sh.radius,sh.polarity);
+            sendMenuUpdatePacket(handler.height, handler.width, handler.depth, handler.radius, handler.polarity);
             close();
         }));
     }
 
     private Text getPolarityText(){
-        if(sh.polarity == 0){
+        if(handler.polarity == 0){
             return Text.translatable("amethystgravity.fieldGenerator.attract");
         }else{
             return Text.translatable("amethystgravity.fieldGenerator.repel");
         }
     }
 
-    protected abstract void renderValuesAndLabels(MatrixStack matrices);
+    protected void renderValuesAndLabels(MatrixStack matrices){
+        if(handler.creative) {
+            int tX = (width) / 2;
+            int tY = (height - textRenderer.fontHeight) / 2 + 6;
+            String label = "[CREATIVE]";
+            textRenderer.draw(matrices, label, tX - textRenderer.getWidth(label) / 2.f + 0.5f, tY - 100, Color.YELLOW.getRGB());
+        }
+    }
 
     protected void drawValue(MatrixStack matrices, double value, int xOffset){
         int tX = (width) / 2;

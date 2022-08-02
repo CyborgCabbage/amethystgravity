@@ -33,5 +33,13 @@
     [
       "has_gravity_glasses"
     ]
-  ]
+  ],
+  "rewards": {
+    "recipes": [
+      "amethystgravity:field_generator",
+      "amethystgravity:planet_field_generator",
+      "amethystgravity:cylinder_field_generator"
+    ]
+  }
+}
 }

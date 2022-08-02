@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "amethystgravity:block/planet_field_generator"
+    }
+  }
+}

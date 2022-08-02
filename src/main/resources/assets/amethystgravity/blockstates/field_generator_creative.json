@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "amethystgravity:block/field_generator",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "amethystgravity:block/field_generator",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "amethystgravity:block/field_generator",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "amethystgravity:block/field_generator",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "amethystgravity:block/field_generator"
+    },
+    "facing=west": {
+      "model": "amethystgravity:block/field_generator",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

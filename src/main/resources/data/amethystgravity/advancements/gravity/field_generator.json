@@ -1,5 +1,5 @@
 {
-  "parent": "amethystgravity:gravity/plating",
+  "parent": "amethystgravity:gravity/gravity_glasses",
   "criteria": {
     "has_field_generator": {
       "conditions": {
@@ -63,5 +63,17 @@
     [
       "has_planet_field_generator"
     ]
-  ]
+  ],
+  "rewards": {
+    "recipes": [
+      "amethystgravity:gravity_anchor_north",
+      "amethystgravity:gravity_anchor_south",
+      "amethystgravity:gravity_anchor_east",
+      "amethystgravity:gravity_anchor_west",
+      "amethystgravity:gravity_anchor_up",
+      "amethystgravity:gravity_anchor_up2",
+      "amethystgravity:gravity_anchor_down",
+      "amethystgravity:gravity_anchor_down2"
+    ]
+  }
 }

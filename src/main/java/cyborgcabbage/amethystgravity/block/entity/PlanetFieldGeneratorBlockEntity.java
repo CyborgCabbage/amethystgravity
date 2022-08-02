@@ -78,7 +78,7 @@ public class PlanetFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlock
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new PlanetFieldGeneratorScreenHandler(syncId, ScreenHandlerContext.create(world, getPos()));
+        return new PlanetFieldGeneratorScreenHandler(syncId, ScreenHandlerContext.create(world, getPos()), isCreative());
     }
 
     @Override
