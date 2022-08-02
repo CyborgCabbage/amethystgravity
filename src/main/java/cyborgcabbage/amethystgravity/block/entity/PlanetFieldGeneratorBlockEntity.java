@@ -99,16 +99,15 @@ public class PlanetFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlock
         buf.writeInt(polarity);
     }
 
-    public void updateSettings(ServerPlayerEntity player, int radius, int polarity){
+    public void updateSettings(ServerPlayerEntity player, int radius, int polarity, int visibility){
         int oldRadius = this.radius;
-        int oldPolarity = this.polarity;
         setRadius(radius);
         setPolarity(polarity);
+        setVisibility(visibility);
         int required = calculateRequiredAmethyst();
         int found = searchAmethyst();
         if(required > found){
             setRadius(oldRadius);
-            setPolarity(oldPolarity);
         }
         player.sendMessage(Text.translatable("amethystgravity.fieldGenerator.blocks", required, found).formatted(required > found ? Formatting.RED : Formatting.GREEN), true);
     }

@@ -22,7 +22,9 @@ import java.util.HashSet;
 
 public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory {
     private static final String POLARITY_KEY = "Polarity";
+    private static final String VISIBILITY_KEY = "Visibility";
     protected int polarity = 0;//0 = attract, 1 = repel
+    protected int visibility = 0;//0 = with glasses, 1 = always, 2 = never
 
     public AbstractFieldGeneratorBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -77,20 +79,31 @@ public abstract class AbstractFieldGeneratorBlockEntity extends BlockEntity impl
     public int getPolarity(){
         return polarity;
     }
+
     public void setPolarity(int polarity) {
         this.polarity = polarity;
+    }
+
+    public int getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(int visibility) {
+        this.visibility = visibility;
     }
 
     @Override
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         nbt.putInt(POLARITY_KEY, polarity);
+        nbt.putInt(VISIBILITY_KEY, visibility);
     }
 
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
         polarity = nbt.getInt(POLARITY_KEY);
+        visibility = nbt.getInt(VISIBILITY_KEY);
     }
 
     @Override

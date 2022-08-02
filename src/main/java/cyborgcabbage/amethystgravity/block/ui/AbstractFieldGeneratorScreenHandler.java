@@ -18,6 +18,7 @@ public abstract class AbstractFieldGeneratorScreenHandler<T extends AbstractFiel
     public int depth;
     public int radius;
     public int polarity;
+    public int visibility;
 
     public boolean creative;
 
@@ -40,7 +41,7 @@ public abstract class AbstractFieldGeneratorScreenHandler<T extends AbstractFiel
 
     protected abstract Block getBlock();
 
-    public abstract void updateSettings(ServerPlayerEntity player, int height, int width, int depth, int radius, int polarity);
+    public abstract void updateSettings(ServerPlayerEntity player, int height, int width, int depth, int radius, int polarity, int visibility);
 
     @Override
     public ItemStack transferSlot(PlayerEntity player, int index) {

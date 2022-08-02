@@ -2,7 +2,11 @@
   "replace": false,
   "values": [
     "amethystgravity:field_generator",
-    "amethystgravity:planet_field_generator"
+    "amethystgravity:cylinder_field_generator",
+    "amethystgravity:planet_field_generator",
+    "amethystgravity:field_generator_creative",
+    "amethystgravity:cylinder_field_generator_creative",
+    "amethystgravity:planet_field_generator_creative"
   ]
 }
 

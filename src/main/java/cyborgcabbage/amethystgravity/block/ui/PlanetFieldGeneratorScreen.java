@@ -21,8 +21,8 @@ public class PlanetFieldGeneratorScreen extends AbstractFieldGeneratorScreen<Pla
         int bX = (width - bWidth) / 2;
         int bY = (height - bHeight) / 2 + 5;
         //Radius
-        addDrawableChild(new ButtonWidget(bX, bY - 40, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.increase"), button -> handler.setRadius(handler.radius + magnitude)));
-        addDrawableChild(new ButtonWidget(bX, bY, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.decrease"), button -> handler.setRadius(handler.radius - magnitude)));
+        addDrawableChild(new ButtonWidget(bX, bY - 48, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.increase"), button -> handler.setRadius(handler.radius + magnitude)));
+        addDrawableChild(new ButtonWidget(bX, bY - 8, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.decrease"), button -> handler.setRadius(handler.radius - magnitude)));
     }
 
     @Override

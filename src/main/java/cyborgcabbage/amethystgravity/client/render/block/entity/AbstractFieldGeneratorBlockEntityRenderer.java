@@ -26,22 +26,34 @@ public abstract class AbstractFieldGeneratorBlockEntityRenderer<BE extends Abstr
 
     @Override
     public void render(BE entity, float tickDelta, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, int overlay) {
-        Entity ce = MinecraftClient.getInstance().getCameraEntity();
-        if(ce instanceof LivingEntity le) {
-            ItemStack equippedStack = le.getEquippedStack(EquipmentSlot.HEAD);
-            if(equippedStack.getItem() == AmethystGravity.GRAVITY_GLASSES) {
-                double time = tickDelta;
-                if (entity.getWorld() != null) {
-                    time += entity.getWorld().getTime();
-                    time /= 20;
+        boolean show = false;
+        switch(entity.getVisibility()){
+            case 0 -> {//With glasses
+                Entity ce = MinecraftClient.getInstance().getCameraEntity();
+                if(ce instanceof LivingEntity le) {
+                    ItemStack equippedStack = le.getEquippedStack(EquipmentSlot.HEAD);
+                    show = equippedStack.getItem() == AmethystGravity.GRAVITY_GLASSES;
                 }
-                //Animation
-                float animation = (float) (time % 1);
-                matrixStack.push();
-                matrixStack.translate(0.5, 0.5, 0.5);
-                renderForceField(entity, matrixStack, vertexConsumerProvider, animation);
-                matrixStack.pop();
             }
+            case 1 -> {//Always
+                show = true;
+            }
+            case 2 -> {//Never
+                show = false;
+            }
+        }
+        if(show){
+            double time = tickDelta;
+            if (entity.getWorld() != null) {
+                time += entity.getWorld().getTime();
+                time /= 20;
+            }
+            //Animation
+            float animation = (float) (time % 1);
+            matrixStack.push();
+            matrixStack.translate(0.5, 0.5, 0.5);
+            renderForceField(entity, matrixStack, vertexConsumerProvider, animation);
+            matrixStack.pop();
         }
     }
 

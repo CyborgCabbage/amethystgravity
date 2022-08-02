@@ -15,6 +15,7 @@ import cyborgcabbage.amethystgravity.block.ui.CylinderFieldGeneratorScreenHandle
 import cyborgcabbage.amethystgravity.block.ui.FieldGeneratorScreenHandler;
 import cyborgcabbage.amethystgravity.block.ui.PlanetFieldGeneratorScreenHandler;
 import cyborgcabbage.amethystgravity.gravity.FieldGravityVerifier;
+import cyborgcabbage.amethystgravity.item.EnchantedBlockItem;
 import cyborgcabbage.amethystgravity.item.GravityAnchor;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
@@ -86,33 +87,45 @@ public class AmethystGravity implements ModInitializer {
 	public static final Item GRAVITY_ANCHOR_DOWN = new GravityAnchor(Direction.DOWN, new FabricItemSettings().group(GRAVITY_ITEM_GROUP));
 	@Override
 	public void onInitialize() {
+		//Register blocks and items
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_glasses"), GRAVITY_GLASSES);
 		registerBlockAndItem("plating", PLATING_BLOCK);
 		registerBlockAndItem("dense_plating", DENSE_PLATING_BLOCK);
-		PLATING_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "plating_block_entity"), FabricBlockEntityTypeBuilder.create(PlatingBlockEntity::new, PLATING_BLOCK, DENSE_PLATING_BLOCK).build());
 
 		registerBlockAndItem("field_generator", FIELD_GENERATOR_BLOCK);
-		registerBlockAndItem("field_generator_creative", FIELD_GENERATOR_BLOCK_CREATIVE);
-		FIELD_GENERATOR_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "field_generator_block_entity"), FabricBlockEntityTypeBuilder.create(FieldGeneratorBlockEntity::new, FIELD_GENERATOR_BLOCK, FIELD_GENERATOR_BLOCK_CREATIVE).build());
-
 		registerBlockAndItem("planet_field_generator", PLANET_FIELD_GENERATOR_BLOCK);
-		registerBlockAndItem("planet_field_generator_creative", PLANET_FIELD_GENERATOR_BLOCK_CREATIVE);
-		PLANET_FIELD_GENERATOR_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "planet_field_generator_block_entity"), FabricBlockEntityTypeBuilder.create(PlanetFieldGeneratorBlockEntity::new, PLANET_FIELD_GENERATOR_BLOCK, PLANET_FIELD_GENERATOR_BLOCK_CREATIVE).build());
-
 		registerBlockAndItem("cylinder_field_generator", CYLINDER_FIELD_GENERATOR_BLOCK);
-		registerBlockAndItem("cylinder_field_generator_creative", CYLINDER_FIELD_GENERATOR_BLOCK_CREATIVE);
+
+		registerEnchantedBlockAndItem("field_generator_creative", FIELD_GENERATOR_BLOCK_CREATIVE);
+		registerEnchantedBlockAndItem("planet_field_generator_creative", PLANET_FIELD_GENERATOR_BLOCK_CREATIVE);
+		registerEnchantedBlockAndItem("cylinder_field_generator_creative", CYLINDER_FIELD_GENERATOR_BLOCK_CREATIVE);
+
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_anchor_north"), GRAVITY_ANCHOR_NORTH);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_anchor_south"), GRAVITY_ANCHOR_SOUTH);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_anchor_east"), GRAVITY_ANCHOR_EAST);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_anchor_west"), GRAVITY_ANCHOR_WEST);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_anchor_up"), GRAVITY_ANCHOR_UP);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_anchor_down"), GRAVITY_ANCHOR_DOWN);
+
+		//Register Block Entities
+		PLATING_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "plating_block_entity"), FabricBlockEntityTypeBuilder.create(PlatingBlockEntity::new, PLATING_BLOCK, DENSE_PLATING_BLOCK).build());
+		FIELD_GENERATOR_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "field_generator_block_entity"), FabricBlockEntityTypeBuilder.create(FieldGeneratorBlockEntity::new, FIELD_GENERATOR_BLOCK, FIELD_GENERATOR_BLOCK_CREATIVE).build());
+		PLANET_FIELD_GENERATOR_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "planet_field_generator_block_entity"), FabricBlockEntityTypeBuilder.create(PlanetFieldGeneratorBlockEntity::new, PLANET_FIELD_GENERATOR_BLOCK, PLANET_FIELD_GENERATOR_BLOCK_CREATIVE).build());
 		CYLINDER_FIELD_GENERATOR_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "cylinder_field_generator_block_entity"), FabricBlockEntityTypeBuilder.create(CylinderFieldGeneratorBlockEntity::new, CYLINDER_FIELD_GENERATOR_BLOCK, CYLINDER_FIELD_GENERATOR_BLOCK_CREATIVE).build());
 
-		//Registry.register(Registry.PARTICLE_TYPE, new Identifier(MOD_ID, "gravity_indicator"), GRAVITY_INDICATOR);
+		//Register screen handlers
 		Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "field_generator"), FIELD_GENERATOR_SCREEN_HANDLER);
 		Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "planet_field_generator"), PLANET_FIELD_GENERATOR_SCREEN_HANDLER);
 		Registry.register(Registry.SCREEN_HANDLER, new Identifier(MOD_ID, "cylinder_field_generator"), CYLINDER_FIELD_GENERATOR_SCREEN_HANDLER);
 
+		//Register packet receivers
 		ServerPlayNetworking.registerGlobalReceiver(FIELD_GENERATOR_MENU_CHANNEL, (server, player, handler, buf, sender) -> {
-			int height  = buf.readInt();
-			int width  = buf.readInt();
-			int depth  = buf.readInt();
-			int radius  = buf.readInt();
-			int polarity  = buf.readInt();
+			int height = buf.readInt();
+			int width = buf.readInt();
+			int depth = buf.readInt();
+			int radius = buf.readInt();
+			int polarity = buf.readInt();
+			int visibility = buf.readInt();
 			server.execute(() -> {
 				if (player.currentScreenHandler instanceof AbstractFieldGeneratorScreenHandler screenHandler) {
 					if(screenHandler.creative && !player.isCreative()){
@@ -123,25 +136,22 @@ public class AmethystGravity implements ModInitializer {
 						player.sendMessage(Text.translatable("amethystgravity.fieldGenerator.modify").formatted(Formatting.RED), true);
 						return;
 					}
-					screenHandler.updateSettings(player, height, width, depth, radius, polarity);
+					screenHandler.updateSettings(player, height, width, depth, radius, polarity, visibility);
 				}
 			});
 		});
 
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_glasses"), GRAVITY_GLASSES);
-
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_anchor_north"), GRAVITY_ANCHOR_NORTH);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_anchor_south"), GRAVITY_ANCHOR_SOUTH);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_anchor_east"), GRAVITY_ANCHOR_EAST);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_anchor_west"), GRAVITY_ANCHOR_WEST);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_anchor_up"), GRAVITY_ANCHOR_UP);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_anchor_down"), GRAVITY_ANCHOR_DOWN);
-
+		//Register gravity channel
 		GravityChannel.UPDATE_GRAVITY.getVerifierRegistry().register(FieldGravityVerifier.FIELD_GRAVITY_SOURCE, FieldGravityVerifier::check);
 	}
 
 	private void registerBlockAndItem(String id, Block block){
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, id), block);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, id), new BlockItem(block, new FabricItemSettings().group(GRAVITY_ITEM_GROUP)));
+	}
+
+	private void registerEnchantedBlockAndItem(String id, Block block){
+		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, id), block);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, id), new EnchantedBlockItem(block, new FabricItemSettings().group(GRAVITY_ITEM_GROUP)));
 	}
 }

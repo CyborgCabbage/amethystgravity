@@ -25,14 +25,38 @@ public class CylinderFieldGeneratorBlockEntityRenderer extends AbstractFieldGene
         float r = radius+.5f-SMIDGE;
         float w = (float)entity.getWidth()/2.f-SMIDGE;
         ArrayList<Vec3f> outer = new ArrayList<>();
-        outer.add(new Vec3f( r, w, r));
-        outer.add(new Vec3f( r, w,-r));
-        outer.add(new Vec3f( r,-w, r));
-        outer.add(new Vec3f( r,-w,-r));
-        outer.add(new Vec3f(-r, w, r));
-        outer.add(new Vec3f(-r, w,-r));
-        outer.add(new Vec3f(-r,-w, r));
-        outer.add(new Vec3f(-r,-w,-r));
+        switch(entity.getAxis()){
+            case X -> {
+                outer.add(new Vec3f( w, r, r));
+                outer.add(new Vec3f( w, r,-r));
+                outer.add(new Vec3f( w,-r, r));
+                outer.add(new Vec3f( w,-r,-r));
+                outer.add(new Vec3f(-w, r, r));
+                outer.add(new Vec3f(-w, r,-r));
+                outer.add(new Vec3f(-w,-r, r));
+                outer.add(new Vec3f(-w,-r,-r));
+            }
+            case Y -> {
+                outer.add(new Vec3f( r, w, r));
+                outer.add(new Vec3f( r, w,-r));
+                outer.add(new Vec3f( r,-w, r));
+                outer.add(new Vec3f( r,-w,-r));
+                outer.add(new Vec3f(-r, w, r));
+                outer.add(new Vec3f(-r, w,-r));
+                outer.add(new Vec3f(-r,-w, r));
+                outer.add(new Vec3f(-r,-w,-r));
+            }
+            case Z -> {
+                outer.add(new Vec3f( r, r, w));
+                outer.add(new Vec3f( r, r,-w));
+                outer.add(new Vec3f( r,-r, w));
+                outer.add(new Vec3f( r,-r,-w));
+                outer.add(new Vec3f(-r, r, w));
+                outer.add(new Vec3f(-r, r,-w));
+                outer.add(new Vec3f(-r,-r, w));
+                outer.add(new Vec3f(-r,-r,-w));
+            }
+        }
 
         ArrayList<Vec3f> inner = new ArrayList<>();
         for (Vec3f v : outer) inner.add(v.copy());

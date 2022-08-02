@@ -137,22 +137,21 @@ public class FieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity
         buf.writeInt(polarity);
     }
 
-    public void updateSettings(ServerPlayerEntity player, int height, int width, int depth, int polarity){
+    public void updateSettings(ServerPlayerEntity player, int height, int width, int depth, int polarity, int visibility){
         int oldHeight = this.height;
         int oldWidth = this.width;
         int oldDepth = this.depth;
-        int oldPolarity = this.polarity;
         setHeight(height);
         setWidth(width);
         setDepth(depth);
         setPolarity(polarity);
+        setVisibility(visibility);
         int required = calculateRequiredAmethyst();
         int found = searchAmethyst();
         if(required > found){
             setHeight(oldHeight);
             setWidth(oldWidth);
             setDepth(oldDepth);
-            setPolarity(oldPolarity);
         }
         player.sendMessage(Text.translatable("amethystgravity.fieldGenerator.blocks", required, found).formatted(required > found ? Formatting.RED : Formatting.GREEN), true);
     }

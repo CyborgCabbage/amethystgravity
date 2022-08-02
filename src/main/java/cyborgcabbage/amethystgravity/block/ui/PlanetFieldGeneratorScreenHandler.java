@@ -27,9 +27,10 @@ public class PlanetFieldGeneratorScreenHandler extends AbstractFieldGeneratorScr
 
     //Server
     @Override
-    public void updateSettings(ServerPlayerEntity player, int height, int width, int depth, int radius, int polarity) {
+    public void updateSettings(ServerPlayerEntity player, int height, int width, int depth, int radius, int polarity, int visibility) {
         setRadius(radius);
         this.polarity = polarity;
+        this.visibility = visibility;
         /*if(button == AbstractFieldGeneratorBlockEntity.Button.POLARITY){
             int newValue = 1-propertyDelegate.get(1);
             if(newValue != 0 && newValue != 1) newValue = 0;
@@ -49,7 +50,7 @@ public class PlanetFieldGeneratorScreenHandler extends AbstractFieldGeneratorScr
         context.run((world, pos) -> {
             ServerWorld serverWorld = (ServerWorld)world;
             Optional<PlanetFieldGeneratorBlockEntity> blockEntity = serverWorld.getBlockEntity(pos, AmethystGravity.PLANET_FIELD_GENERATOR_BLOCK_ENTITY);
-            blockEntity.ifPresent(be -> be.updateSettings(player, this.radius, this.polarity));
+            blockEntity.ifPresent(be -> be.updateSettings(player, this.radius, this.polarity, this.visibility));
             serverWorld.markDirty(pos);
             serverWorld.getChunkManager().markForUpdate(pos);
         });

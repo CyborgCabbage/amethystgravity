@@ -29,10 +29,11 @@ public class CylinderFieldGeneratorScreenHandler extends AbstractFieldGeneratorS
     //Server
 
     @Override
-    public void updateSettings(ServerPlayerEntity player, int height, int width, int depth, int radius, int polarity) {
+    public void updateSettings(ServerPlayerEntity player, int height, int width, int depth, int radius, int polarity, int visibility) {
         setRadius(radius);
         setWidth(width);
         this.polarity = polarity;
+        this.visibility = visibility;
         /*if(button == AbstractFieldGeneratorBlockEntity.Button.POLARITY){
             int newValue = 1-propertyDelegate.get(2);
             if(newValue != 0 && newValue != 1) newValue = 0;
@@ -58,7 +59,7 @@ public class CylinderFieldGeneratorScreenHandler extends AbstractFieldGeneratorS
             ServerWorld serverWorld = (ServerWorld)world;
             Optional<CylinderFieldGeneratorBlockEntity> blockEntity = serverWorld.getBlockEntity(pos, AmethystGravity.CYLINDER_FIELD_GENERATOR_BLOCK_ENTITY);
             blockEntity.ifPresent(be -> {
-                be.updateSettings(player, this.radius, this.width, this.polarity);
+                be.updateSettings(player, this.radius, this.width, this.polarity, this.visibility);
             });
             serverWorld.markDirty(pos);
             serverWorld.getChunkManager().markForUpdate(pos);

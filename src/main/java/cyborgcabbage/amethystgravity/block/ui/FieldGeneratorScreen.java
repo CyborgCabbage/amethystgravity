@@ -21,14 +21,14 @@ public class FieldGeneratorScreen extends AbstractFieldGeneratorScreen<FieldGene
         int bX = (width - bWidth) / 2;
         int bY = (height - bHeight) / 2 + 5;
         //Height
-        addDrawableChild(new ButtonWidget(bX-50, bY - 40, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.increase"), button -> handler.setHeight(handler.height + magnitude)));
-        addDrawableChild(new ButtonWidget(bX-50, bY, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.decrease"), button -> handler.setHeight(handler.height - magnitude)));
+        addDrawableChild(new ButtonWidget(bX-50, bY - 48, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.increase"), button -> handler.setHeight(handler.height + magnitude)));
+        addDrawableChild(new ButtonWidget(bX-50, bY - 8, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.decrease"), button -> handler.setHeight(handler.height - magnitude)));
         //Width
-        addDrawableChild(new ButtonWidget(bX, bY - 40, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.increase"), button -> handler.setWidth(handler.width + magnitude)));
-        addDrawableChild(new ButtonWidget(bX, bY, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.decrease"), button -> handler.setWidth(handler.width - magnitude)));
+        addDrawableChild(new ButtonWidget(bX, bY - 48, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.increase"), button -> handler.setWidth(handler.width + magnitude)));
+        addDrawableChild(new ButtonWidget(bX, bY - 8, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.decrease"), button -> handler.setWidth(handler.width - magnitude)));
         //Depth
-        addDrawableChild(new ButtonWidget(bX+50, bY - 40, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.increase"), button -> handler.setDepth(handler.depth + magnitude)));
-        addDrawableChild(new ButtonWidget(bX+50, bY, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.decrease"), button -> handler.setDepth(handler.depth - magnitude)));
+        addDrawableChild(new ButtonWidget(bX+50, bY - 48, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.increase"), button -> handler.setDepth(handler.depth + magnitude)));
+        addDrawableChild(new ButtonWidget(bX+50, bY - 8, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.decrease"), button -> handler.setDepth(handler.depth - magnitude)));
     }
 
     @Override

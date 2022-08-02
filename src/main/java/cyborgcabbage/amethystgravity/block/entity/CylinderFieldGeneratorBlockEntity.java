@@ -141,19 +141,18 @@ public class CylinderFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlo
         packetByteBuf.writeInt(polarity);
     }
 
-    public void updateSettings(ServerPlayerEntity player, int radius, int width, int polarity){
+    public void updateSettings(ServerPlayerEntity player, int radius, int width, int polarity, int visibility){
         int oldRadius = this.radius;
         int oldWidth = this.width;
-        int oldPolarity = this.polarity;
         setRadius(radius);
         setWidth(width);
         setPolarity(polarity);
+        setVisibility(visibility);
         int required = calculateRequiredAmethyst();
         int found = searchAmethyst();
         if(required > found){
             setRadius(oldRadius);
             setWidth(oldWidth);
-            setPolarity(oldPolarity);
         }
         player.sendMessage(Text.translatable("amethystgravity.fieldGenerator.blocks", required, found).formatted(required > found ? Formatting.RED : Formatting.GREEN), true);
     }
