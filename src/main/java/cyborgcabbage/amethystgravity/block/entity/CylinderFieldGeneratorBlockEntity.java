@@ -139,6 +139,8 @@ public class CylinderFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlo
         packetByteBuf.writeInt(radius);
         packetByteBuf.writeInt(width);
         packetByteBuf.writeInt(polarity);
+        packetByteBuf.writeInt(visibility);
+
     }
 
     public void updateSettings(ServerPlayerEntity player, int radius, int width, int polarity, int visibility){

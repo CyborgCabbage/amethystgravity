@@ -97,6 +97,7 @@ public class PlanetFieldGeneratorBlockEntity extends AbstractFieldGeneratorBlock
     public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
         buf.writeInt(radius);
         buf.writeInt(polarity);
+        buf.writeInt(visibility);
     }
 
     public void updateSettings(ServerPlayerEntity player, int radius, int polarity, int visibility){

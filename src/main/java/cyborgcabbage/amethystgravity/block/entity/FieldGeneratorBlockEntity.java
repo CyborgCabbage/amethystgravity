@@ -135,6 +135,7 @@ public class FieldGeneratorBlockEntity extends AbstractFieldGeneratorBlockEntity
         buf.writeInt(width);
         buf.writeInt(depth);
         buf.writeInt(polarity);
+        buf.writeInt(visibility);
     }
 
     public void updateSettings(ServerPlayerEntity player, int height, int width, int depth, int polarity, int visibility){

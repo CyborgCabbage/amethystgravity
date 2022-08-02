@@ -18,6 +18,7 @@ public class PlanetFieldGeneratorScreenHandler extends AbstractFieldGeneratorScr
         super(AmethystGravity.PLANET_FIELD_GENERATOR_SCREEN_HANDLER, syncId);
         this.radius = buf.readInt();
         this.polarity = buf.readInt();
+        this.visibility = buf.readInt();
     }
 
     //Server

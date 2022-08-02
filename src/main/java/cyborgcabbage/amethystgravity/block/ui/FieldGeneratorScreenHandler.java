@@ -19,6 +19,7 @@ public class FieldGeneratorScreenHandler extends AbstractFieldGeneratorScreenHan
         this.width = buf.readInt();
         this.depth = buf.readInt();
         this.polarity = buf.readInt();
+        this.visibility = buf.readInt();
     }
 
     //Server

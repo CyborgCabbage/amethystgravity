@@ -19,6 +19,7 @@ public class CylinderFieldGeneratorScreenHandler extends AbstractFieldGeneratorS
         this.radius = buf.readInt();
         this.width = buf.readInt();
         this.polarity = buf.readInt();
+        this.visibility = buf.readInt();
     }
 
     //Server
