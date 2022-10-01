@@ -2,7 +2,6 @@ package cyborgcabbage.amethystgravity.block.entity;
 
 import com.fusionflux.gravity_api.util.RotationUtil;
 import cyborgcabbage.amethystgravity.AmethystGravity;
-import cyborgcabbage.amethystgravity.block.AbstractFieldGeneratorBlock;
 import cyborgcabbage.amethystgravity.block.CylinderFieldGeneratorBlock;
 import cyborgcabbage.amethystgravity.block.ui.CylinderFieldGeneratorScreenHandler;
 import cyborgcabbage.amethystgravity.gravity.GravityEffect;

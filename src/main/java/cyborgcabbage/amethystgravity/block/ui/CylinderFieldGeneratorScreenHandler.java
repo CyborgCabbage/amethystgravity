@@ -2,7 +2,6 @@ package cyborgcabbage.amethystgravity.block.ui;
 
 import cyborgcabbage.amethystgravity.AmethystGravity;
 import cyborgcabbage.amethystgravity.block.entity.CylinderFieldGeneratorBlockEntity;
-import cyborgcabbage.amethystgravity.block.entity.FieldGeneratorBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketByteBuf;
