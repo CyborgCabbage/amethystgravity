@@ -5,7 +5,7 @@ import cyborgcabbage.amethystgravity.block.entity.FieldGeneratorBlockEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
@@ -47,8 +47,8 @@ public class FieldGeneratorBlockEntityRenderer extends AbstractFieldGeneratorBlo
         }
 
         VertexConsumer buffer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucent(ARROW_TEXTURE));
-        Matrix4f m = matrixStack.peek().getPositionMatrix();
-        Matrix3f n = matrixStack.peek().getNormalMatrix();
+        Matrix4f m = matrixStack.peek().getModel();
+        Matrix3f n = matrixStack.peek().getNormal();
         float h0 = -animation;
         float h1 = -animation;
         if(entity.getPolarity() == 1) {

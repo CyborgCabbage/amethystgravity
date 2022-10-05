@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/orientable_vertical",
+  "textures": {
+    "front": "amethystgravity:block/field_generator_front_creative",
+    "side": "minecraft:block/command_block_back"
+  }
+}

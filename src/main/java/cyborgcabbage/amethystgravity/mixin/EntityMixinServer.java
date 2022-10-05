@@ -130,7 +130,7 @@ public abstract class EntityMixinServer implements GravityData {
                     List<Direction> localCollidingDirections = new ArrayList<>();
                     Box box = entity.getBoundingBox();
                     List<VoxelShape> entityCollisions = entity.world.getEntityCollisions(entity, box.stretch(movement));
-                    Vec3d adjustedMovement = (movement.lengthSquared() == 0.0) ? movement : Entity.adjustMovementForCollisions(entity, movement, box, entity.world, entityCollisions);
+                    Vec3d adjustedMovement = (movement.lengthSquared() == 0.0) ? movement : Entity.adjustSingleAxisMovementForCollisions(entity, movement, box, entity.world, entityCollisions);
                     if (movement.x > adjustedMovement.x) localCollidingDirections.add(Direction.EAST);
                     if (movement.x < adjustedMovement.x) localCollidingDirections.add(Direction.WEST);
                     if (movement.y > adjustedMovement.y) localCollidingDirections.add(Direction.UP);

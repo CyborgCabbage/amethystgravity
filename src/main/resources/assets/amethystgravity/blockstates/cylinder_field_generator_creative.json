@@ -1,15 +1,15 @@
 {
   "variants": {
     "axis=x": {
-      "model": "amethystgravity:block/cylinder_field_generator_horizontal",
+      "model": "amethystgravity:block/cylinder_field_generator_horizontal_creative",
       "x": 90,
       "y": 90
     },
     "axis=y": {
-      "model": "amethystgravity:block/cylinder_field_generator"
+      "model": "amethystgravity:block/cylinder_field_generator_creative"
     },
     "axis=z": {
-      "model": "amethystgravity:block/cylinder_field_generator_horizontal",
+      "model": "amethystgravity:block/cylinder_field_generator_horizontal_creative",
       "x": 90
     }
   }

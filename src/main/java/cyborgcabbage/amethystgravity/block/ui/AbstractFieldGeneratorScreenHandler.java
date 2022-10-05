@@ -42,7 +42,7 @@ public abstract class AbstractFieldGeneratorScreenHandler<T extends AbstractFiel
     public abstract void updateSettings(ServerPlayerEntity player, int height, int width, int depth, int radius, int polarity, int visibility);
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int index) {
+    public ItemStack quickTransfer(PlayerEntity player, int index) {
         return null;
     }
 

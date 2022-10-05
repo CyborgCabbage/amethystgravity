@@ -96,9 +96,9 @@ public class AmethystGravity implements ModInitializer {
 		registerBlockAndItem("planet_field_generator", PLANET_FIELD_GENERATOR_BLOCK);
 		registerBlockAndItem("cylinder_field_generator", CYLINDER_FIELD_GENERATOR_BLOCK);
 
-		registerEnchantedBlockAndItem("field_generator_creative", FIELD_GENERATOR_BLOCK_CREATIVE);
-		registerEnchantedBlockAndItem("planet_field_generator_creative", PLANET_FIELD_GENERATOR_BLOCK_CREATIVE);
-		registerEnchantedBlockAndItem("cylinder_field_generator_creative", CYLINDER_FIELD_GENERATOR_BLOCK_CREATIVE);
+		registerBlockAndItem("field_generator_creative", FIELD_GENERATOR_BLOCK_CREATIVE);
+		registerBlockAndItem("planet_field_generator_creative", PLANET_FIELD_GENERATOR_BLOCK_CREATIVE);
+		registerBlockAndItem("cylinder_field_generator_creative", CYLINDER_FIELD_GENERATOR_BLOCK_CREATIVE);
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_anchor_north"), GRAVITY_ANCHOR_NORTH);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "gravity_anchor_south"), GRAVITY_ANCHOR_SOUTH);

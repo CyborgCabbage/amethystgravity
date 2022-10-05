@@ -5,7 +5,7 @@ import cyborgcabbage.amethystgravity.block.entity.AbstractFieldGeneratorBlockEnt
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -69,7 +69,7 @@ public abstract class AbstractFieldGeneratorBlockEntityRenderer<BE extends Abstr
     }
 
     protected void addVertex(Matrix4f m, Matrix3f n, VertexConsumer buffer, float x, float y, float z, float u, float v){
-        buffer.vertex(m, x, y, z).color(.7f, .5f, .9f, .4f).texture(u, v).overlay(OverlayTexture.DEFAULT_UV).light(LightmapTextureManager.MAX_LIGHT_COORDINATE).normal(n, 0, 1,0).next();
+        buffer.vertex(m, x, y, z).color(.7f, .5f, .9f, .4f).uv(u, v).overlay(OverlayTexture.DEFAULT_UV).light(LightmapTextureManager.MAX_LIGHT_COORDINATE).normal(n, 0, 1,0).next();
     }
 
     //Each point should be next to the previous going round the quad

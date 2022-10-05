@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "id": "amethystgravity",
+    "group": "amethystgravity",
+    "provides": [],
+    "version": "${version}",
+    "entrypoints": {
+      "main": "cyborgcabbage.amethystgravity.AmethystGravity",
+      "client": "cyborgcabbage.amethystgravity.client.AmethystGravityClient"
+    },
+    "depends": [
+      {
+        "id": "gravity_api",
+        "versions": ">=0.7.19"
+      },
+      {
+        "id": "quilt_loader",
+        "versions": ">=0.16.0-"
+      },
+      {
+        "id": "quilted_fabric_api",
+        "versions": ">=1.0.0-"
+      },
+      {
+        "id": "minecraft",
+        "versions": ">=1.19.2"
+      }
+    ],
+    "metadata": {
+      "name": "Amethyst Gravity",
+      "description": "Lets you change player gravity",
+      "contributors": {
+        "CyborgCabbage": "Developer"
+      },
+      "license": "MIT",
+      "contact": {
+        "homepage": "https://modrinth.com/mod/amethyst-gravity",
+        "sources": "https://github.com/CyborgCabbage/amethystgravity",
+        "issues": "https://github.com/CyborgCabbage/amethystgravity/issues"
+      },
+      "icon": "assets/amethystgravity/icon.png"
+    },
+    "intermediate_mappings": "net.fabricmc:intermediary"
+  },
+  "mixin": [
+    "amethystgravity.mixins.json"
+  ]
+}

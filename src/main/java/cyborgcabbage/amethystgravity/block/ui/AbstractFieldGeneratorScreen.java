@@ -81,7 +81,7 @@ public abstract class AbstractFieldGeneratorScreen<T extends AbstractFieldGenera
         //Apply Changes
         applyChanges = addDrawableChild(new ButtonWidget(bX, bY + 70, bWidth, bHeight, Text.translatable("amethystgravity.fieldGenerator.applyChanges"), button -> {
             sendMenuUpdatePacket(handler.height, handler.width, handler.depth, handler.radius, handler.polarity, handler.visibility);
-            close();
+            closeScreen();
         }));
     }
 
